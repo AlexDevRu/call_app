@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Learning_Android_CallApp_Kulakov</string>
+    <string name="accept_call">Accept call</string>
+    <string name="decline_call">Decline call</string>
+</resources>
