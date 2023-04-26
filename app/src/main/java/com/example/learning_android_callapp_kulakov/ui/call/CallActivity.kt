@@ -10,14 +10,19 @@ import android.os.Looper
 import android.telecom.Call
 import android.view.View
 import android.view.WindowManager
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.example.learning_android_callapp_kulakov.CallManager
+import com.example.learning_android_callapp_kulakov.R
 import com.example.learning_android_callapp_kulakov.databinding.ActivityCallBinding
+import timber.log.Timber
 
 class CallActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var binding: ActivityCallBinding
+
+    private val viewModel by viewModels<CallViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,13 +50,42 @@ class CallActivity : AppCompatActivity(), View.OnClickListener {
         binding.phoneNumber.text = intent?.data?.schemeSpecificPart
 
         CallManager.callState.observe(this) {
-            binding.btnAnswer.isVisible = it == Call.STATE_RINGING
-            binding.btnHangup.isVisible = it == Call.STATE_RINGING || it == Call.STATE_DIALING || it == Call.STATE_ACTIVE
+
+            Timber.d("CALL_STATE - $it")
+
+            if (it == null) return@observe
+
+            binding.tvDuration.isVisible = it == Call.STATE_ACTIVE || it == Call.STATE_DISCONNECTING || it == Call.STATE_DISCONNECTED
+
+            binding.tvCallStatus.text = when (it) {
+                Call.STATE_RINGING -> getString(R.string.ringing)
+                Call.STATE_DIALING -> getString(R.string.dialing)
+                Call.STATE_ACTIVE -> getString(R.string.active)
+                Call.STATE_DISCONNECTING, Call.STATE_DISCONNECTED -> getString(R.string.hanging_up)
+                else -> it.toString()
+            }
+
+            if (it == Call.STATE_DIALING) {
+                binding.root.jumpToState(R.id.end)
+            } else if (it == Call.STATE_ACTIVE) {
+                binding.root.transitionToEnd()
+                viewModel.start()
+            }
+
             if (it == Call.STATE_DISCONNECTED) {
+                binding.btnHangup.isEnabled = false
+                binding.btnAnswer.isEnabled = false
+                viewModel.stop()
                 Handler(Looper.getMainLooper()).postDelayed({
                     finish()
                 }, 1000)
             }
+        }
+
+        viewModel.duration.observe(this) {
+            val minutes = (it / 60).toString().padStart(2, '0')
+            val seconds = (it % 60).toString().padStart(2, '0')
+            binding.tvDuration.text = "$minutes:$seconds"
         }
     }
 

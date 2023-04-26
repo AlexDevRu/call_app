@@ -1,21 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipToPadding="false"
-    android:padding="16dp">
+    android:padding="16dp"
+    app:layoutDescription="@xml/activity_call_scene">
 
     <TextView
         android:id="@+id/phoneNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:gravity="center"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="+375331234567" />
+
+    <TextView
+        android:id="@+id/tvCallStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/phoneNumber"
+        tools:text="Calling..." />
+
+    <TextView
+        android:id="@+id/tvDuration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/tvCallStatus"
+        tools:text="00:03" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnHangup"
@@ -23,7 +40,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/decline_call"
         android:src="@drawable/ic_call_end"
-        app:backgroundTint="@color/red"
+        app:backgroundTint="@color/color_fab_hangup"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:tint="@color/white" />
@@ -34,9 +51,9 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/accept_call"
         android:src="@drawable/ic_call"
-        app:backgroundTint="@color/green"
+        app:backgroundTint="@color/color_fab_answer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:tint="@color/white" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.motion.widget.MotionLayout>
