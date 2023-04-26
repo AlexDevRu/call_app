@@ -1,4 +1,4 @@
-package com.example.learning_android_callapp_kulakov
+package com.example.learning_android_callapp_kulakov.ui.call
 
 import android.app.KeyguardManager
 import android.content.Context
@@ -12,6 +12,7 @@ import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import com.example.learning_android_callapp_kulakov.CallManager
 import com.example.learning_android_callapp_kulakov.databinding.ActivityCallBinding
 
 class CallActivity : AppCompatActivity(), View.OnClickListener {

@@ -1,12 +1,12 @@
 package com.example.learning_android_callapp_kulakov
 
-import android.app.KeyguardManager
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.telecom.Call
 import android.telecom.InCallService
 import androidx.core.app.NotificationCompat
+import com.example.learning_android_callapp_kulakov.ui.call.CallActivity
 
 
 class CallService : InCallService() {

@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG"/>
 
     <application
         android:name=".CallApplication"
@@ -16,7 +17,8 @@
         android:theme="@style/Theme.Learning_Android_CallApp_Kulakov"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.main.MainActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,7 +41,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".CallActivity" />
+        <activity android:name=".ui.call.CallActivity" />
 
         <service
             android:name=".CallService"

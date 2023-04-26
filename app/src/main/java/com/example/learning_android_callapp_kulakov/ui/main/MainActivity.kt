@@ -1,4 +1,4 @@
-package com.example.learning_android_callapp_kulakov
+package com.example.learning_android_callapp_kulakov.ui.main
 
 import android.Manifest
 import android.app.role.RoleManager
@@ -10,23 +10,38 @@ import android.telecom.TelecomManager
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import com.example.learning_android_callapp_kulakov.Extensions.pop
+import com.example.learning_android_callapp_kulakov.R
 import com.example.learning_android_callapp_kulakov.databinding.ActivityMainBinding
+import com.example.learning_android_callapp_kulakov.ui.adapters.CallLogAdapter
 
 
 class MainActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClickListener {
 
     private lateinit var binding: ActivityMainBinding
 
+    private val viewModel by viewModels<MainViewModel>()
+
+    private val callLogAdapter = CallLogAdapter()
+
     private val permissionsLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { result ->
-        if (result.all { it.value }) {
-            Toast.makeText(this, "All permissions are granted", Toast.LENGTH_SHORT).show()
+        if (result[Manifest.permission.READ_CALL_LOG] == true) {
+            viewModel.readCallLog()
+        }
+    }
+
+    private val callPhonePermissionsLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { result ->
+        if (result) {
+            doCall()
         }
     }
 
@@ -50,19 +65,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClick
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.btnAppAsDefault.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val rm = getSystemService(ROLE_SERVICE) as RoleManager
-                dialerLauncher.launch(rm.createRequestRoleIntent(RoleManager.ROLE_DIALER))
-            } else {
-                val intent = Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
-                    .putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
-                dialerLauncher.launch(intent)
-            }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val rm = getSystemService(ROLE_SERVICE) as RoleManager
+            dialerLauncher.launch(rm.createRequestRoleIntent(RoleManager.ROLE_DIALER))
+        } else {
+            val intent = Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)
+                .putExtra(TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, packageName)
+            dialerLauncher.launch(intent)
         }
 
         val permissions = mutableListOf(
-            Manifest.permission.CALL_PHONE
+            Manifest.permission.READ_CALL_LOG,
         )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -95,10 +109,20 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClick
         binding.etPhoneNumber.doAfterTextChanged {
             binding.btnBackspace.isVisible = !it.isNullOrEmpty()
         }
+
+        binding.rvCalls.adapter = callLogAdapter
+
+        observe()
+    }
+
+    private fun observe() {
+        viewModel.calls.observe(this) {
+            callLogAdapter.submitList(it)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    fun requestRole() {
+    private fun requestRole() {
         val roleManager = getSystemService(ROLE_SERVICE) as RoleManager
         val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)
         screeningLauncher.launch(intent)
@@ -119,8 +143,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClick
             binding.btn0 -> binding.etPhoneNumber.append("0")
             binding.btnSharp -> binding.etPhoneNumber.append("#")
             binding.btnBackspace -> binding.etPhoneNumber.pop()
-            binding.btnCall -> doCall()
-            binding.btnDialVisibility -> changeDialpadVisibility()
+            binding.btnCall -> callPhonePermissionsLauncher.launch(Manifest.permission.CALL_PHONE)
+            binding.btnDialVisibility -> changeDialPadVisibility()
         }
     }
 
@@ -140,7 +164,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClick
         startActivity(intent)
     }
 
-    private fun changeDialpadVisibility() {
+    private fun changeDialPadVisibility() {
         if (binding.root.currentState == R.id.start)
             binding.root.transitionToEnd()
         else

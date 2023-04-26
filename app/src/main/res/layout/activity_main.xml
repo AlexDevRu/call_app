@@ -4,10 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipToPadding="false"
-    android:padding="16dp"
     app:layoutDescription="@xml/activity_main_scene"
-    tools:context=".MainActivity">
+    tools:context=".ui.main.MainActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvCalls"
@@ -15,20 +13,14 @@
         android:layout_height="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@id/etPhoneNumber"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.appcompat.widget.AppCompatImageButton
-        android:id="@+id/btnAppAsDefault"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_call"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/item_call" />
 
     <EditText
         android:id="@+id/etPhoneNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="10dp"
         android:autofillHints="phone"
         android:gravity="center"
@@ -181,6 +173,7 @@
         android:id="@+id/btnCall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:contentDescription="@string/accept_call"
         android:src="@drawable/ic_call"
         app:backgroundTint="@color/green"
