@@ -1,18 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipToPadding="false"
     android:padding="16dp"
+    app:layoutDescription="@xml/activity_main_scene"
     tools:context=".MainActivity">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnAppAsDefault"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvCalls"
         android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@id/etPhoneNumber"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btnAppAsDefault"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="set default app"
+        android:src="@drawable/ic_call"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
@@ -157,6 +167,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/btn0" />
 
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/btnDialVisibility"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:src="@drawable/ic_dialpad"
+        app:layout_constraintBottom_toBottomOf="@id/btnCall"
+        app:layout_constraintStart_toStartOf="@id/btnStar"
+        app:layout_constraintTop_toTopOf="@id/btnCall" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnCall"
         android:layout_width="wrap_content"
@@ -181,4 +201,4 @@
         app:layout_constraintTop_toTopOf="@id/btnCall"
         tools:visibility="visible" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.motion.widget.MotionLayout>

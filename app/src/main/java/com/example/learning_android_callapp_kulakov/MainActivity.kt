@@ -90,6 +90,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClick
         binding.btnSharp.setOnClickListener(this)
         binding.btnBackspace.setOnClickListener(this)
         binding.btnCall.setOnClickListener(this)
+        binding.btnDialVisibility.setOnClickListener(this)
 
         binding.etPhoneNumber.doAfterTextChanged {
             binding.btnBackspace.isVisible = !it.isNullOrEmpty()
@@ -119,6 +120,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClick
             binding.btnSharp -> binding.etPhoneNumber.append("#")
             binding.btnBackspace -> binding.etPhoneNumber.pop()
             binding.btnCall -> doCall()
+            binding.btnDialVisibility -> changeDialpadVisibility()
         }
     }
 
@@ -136,5 +138,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClick
         val intent = Intent(Intent.ACTION_CALL)
         intent.data = Uri.parse("tel:" + binding.etPhoneNumber.text.toString().trim())
         startActivity(intent)
+    }
+
+    private fun changeDialpadVisibility() {
+        if (binding.root.currentState == R.id.start)
+            binding.root.transitionToEnd()
+        else
+            binding.root.transitionToStart()
     }
 }
