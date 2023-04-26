@@ -28,7 +28,8 @@ class MainViewModel(private val app: Application): AndroidViewModel(app) {
 
             val cursor = app.contentResolver.query(
                 CallLog.Calls.CONTENT_URI,
-                projection, null, null, null
+                projection, null, null,
+                "${CallLog.Calls.DATE} desc"
             ) ?: return@launch
 
             val idColIdx = cursor.getColumnIndex(idCol)

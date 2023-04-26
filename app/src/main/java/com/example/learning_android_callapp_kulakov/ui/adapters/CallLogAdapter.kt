@@ -1,10 +1,12 @@
 package com.example.learning_android_callapp_kulakov.ui.adapters
 
+import android.provider.CallLog
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil.ItemCallback
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.learning_android_callapp_kulakov.R
 import com.example.learning_android_callapp_kulakov.databinding.ItemCallBinding
 import com.example.learning_android_callapp_kulakov.models.Call
 import java.text.SimpleDateFormat
@@ -42,6 +44,13 @@ class CallLogAdapter : ListAdapter<Call, CallLogAdapter.CallViewHolder>(DIFF_UTI
         fun bind(call: Call) {
             binding.tvPhoneNumber.text = call.phoneNumber
             binding.tvDate.text = simpleDateFormat.format(call.timestamp)
+            binding.ivCallType.setImageResource(
+                when (call.callType) {
+                    CallLog.Calls.INCOMING_TYPE -> R.drawable.ic_call_received
+                    CallLog.Calls.OUTGOING_TYPE -> R.drawable.ic_call_made
+                    else -> R.drawable.ic_call_missed
+                }
+            )
         }
     }
 
