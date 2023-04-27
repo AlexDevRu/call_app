@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil.ItemCallback
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.learning_android_callapp_kulakov.R
 import com.example.learning_android_callapp_kulakov.databinding.ItemContactBinding
 import com.example.learning_android_callapp_kulakov.models.Contact
 
@@ -39,6 +40,7 @@ class ContactsAdapter : ListAdapter<Contact, ContactsAdapter.ContactViewHolder>(
         fun bind(contact: Contact) {
             Glide.with(binding.ivAvatar)
                 .load(contact.avatar)
+                .error(R.drawable.ic_account)
                 .into(binding.ivAvatar)
             binding.tvDisplayName.text = contact.name
         }

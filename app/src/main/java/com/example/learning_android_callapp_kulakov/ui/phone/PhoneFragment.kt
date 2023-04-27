@@ -30,7 +30,7 @@ class PhoneFragment : Fragment(), View.OnClickListener, View.OnLongClickListener
 
     private lateinit var binding: FragmentPhoneBinding
 
-    private val viewModel by viewModels<MainViewModel>()
+    private val viewModel by viewModels<PhoneViewModel>()
 
     private val callLogAdapter = CallLogAdapter(this)
 
@@ -131,7 +131,9 @@ class PhoneFragment : Fragment(), View.OnClickListener, View.OnLongClickListener
 
     private fun observe() {
         viewModel.calls.observe(viewLifecycleOwner) {
-            callLogAdapter.submitList(it)
+            callLogAdapter.submitList(it) {
+                binding.rvCalls.scrollToPosition(0)
+            }
         }
     }
 

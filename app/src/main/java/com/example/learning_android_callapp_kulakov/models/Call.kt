@@ -4,5 +4,7 @@ data class Call(
     val id: Long,
     val timestamp: Long,
     val callType: Int,
-    val phoneNumber: String
+    val phoneNumber: String,
+    val avatar: String?,
+    val count: Int
 )

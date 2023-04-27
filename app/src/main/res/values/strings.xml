@@ -10,4 +10,9 @@
 
     <string name="phone">Phone</string>
     <string name="contacts">Contacts</string>
+
+    <string name="dialpad">Dialpad</string>
+    <string name="backspace">Backspace</string>
+
+    <string name="call_log_title_with_counter">%s (%d)</string>
 </resources>

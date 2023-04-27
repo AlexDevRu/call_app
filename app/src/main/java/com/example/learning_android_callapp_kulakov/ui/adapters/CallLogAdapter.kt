@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil.ItemCallback
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.learning_android_callapp_kulakov.R
 import com.example.learning_android_callapp_kulakov.databinding.ItemCallBinding
 import com.example.learning_android_callapp_kulakov.models.Call
@@ -56,7 +57,14 @@ class CallLogAdapter(
 
         fun bind(call: Call) {
             this.call = call
-            binding.tvPhoneNumber.text = call.phoneNumber
+            Glide.with(binding.ivAvatar)
+                .load(call.avatar)
+                .error(R.drawable.ic_account)
+                .into(binding.ivAvatar)
+            binding.tvPhoneNumber.text = if (call.count > 1)
+                binding.root.context.getString(R.string.call_log_title_with_counter, call.phoneNumber, call.count)
+            else
+                call.phoneNumber
             binding.tvDate.text = simpleDateFormat.format(call.timestamp)
             binding.ivCallType.setImageResource(
                 when (call.callType) {

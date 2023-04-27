@@ -11,6 +11,8 @@
         android:id="@+id/rvCalls"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:paddingBottom="80dp"
+        android:clipToPadding="false"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@id/etPhoneNumber"
         app:layout_constraintTop_toTopOf="parent"
@@ -161,13 +163,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/btn0" />
 
-    <androidx.appcompat.widget.AppCompatImageView
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnDialVisibility"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/dialpad"
         android:padding="10dp"
         android:src="@drawable/ic_dialpad"
-        android:background="@color/white"
+        app:backgroundTint="@color/white"
         app:layout_constraintBottom_toBottomOf="@id/btnCall"
         app:layout_constraintStart_toStartOf="@id/btnStar"
         app:layout_constraintTop_toTopOf="@id/btnCall" />
@@ -185,13 +188,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:tint="@color/white" />
 
-    <androidx.appcompat.widget.AppCompatImageView
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnBackspace"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/backspace"
         android:padding="10dp"
         android:src="@drawable/ic_backspace"
         android:visibility="gone"
+        app:backgroundTint="@color/white"
         app:layout_constraintBottom_toBottomOf="@id/btnCall"
         app:layout_constraintEnd_toEndOf="@id/btnSharp"
         app:layout_constraintTop_toTopOf="@id/btnCall"
