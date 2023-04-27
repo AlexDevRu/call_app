@@ -1,7 +1,8 @@
-package com.example.learning_android_callapp_kulakov.ui.main
+package com.example.learning_android_callapp_kulakov.ui.phone
 
 import android.app.Application
 import android.provider.CallLog
+import android.provider.ContactsContract
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -24,9 +25,29 @@ class MainViewModel(private val app: Application): AndroidViewModel(app) {
             val dateCol = CallLog.Calls.DATE
             val numberCol = CallLog.Calls.NUMBER
             val durationCol = CallLog.Calls.DURATION
-            val typeCol = CallLog.Calls.TYPE // 1 - Incoming, 2 - Outgoing, 3 - Missed
+            val typeCol = CallLog.Calls.TYPE
 
             val projection = arrayOf(idCol, dateCol, numberCol, durationCol, typeCol)
+
+            val phonesMap = hashMapOf<String, String>()
+
+            val phonesCursor = app.contentResolver.query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,null,null, null
+            )
+            val regex = Regex("\\D")
+
+            if (phonesCursor != null) {
+                val numberIndex = phonesCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                val displayNameIndex = phonesCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
+                while (phonesCursor.moveToNext()) {
+                    val phoneNumber = phonesCursor.getString(numberIndex).replace(regex, "")
+                    val name = phonesCursor.getString(displayNameIndex)
+                    phonesMap[phoneNumber] = name
+                }
+                phonesCursor.close()
+            }
+
+            Timber.d("ASD - ${phonesMap}")
 
             val cursor = app.contentResolver.query(
                 CallLog.Calls.CONTENT_URI,
@@ -51,10 +72,12 @@ class MainViewModel(private val app: Application): AndroidViewModel(app) {
 
                 Timber.d("$number $duration $type")
 
+                val phoneNumberOnlyDigits = number.replace(regex, "")
+
                 val call = Call(
                     id = id,
                     timestamp = timestamp,
-                    phoneNumber = number,
+                    phoneNumber = phonesMap[phoneNumberOnlyDigits] ?: number,
                     callType = type
                 )
                 calls.add(call)

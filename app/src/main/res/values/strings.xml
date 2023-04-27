@@ -7,4 +7,7 @@
     <string name="dialing">Dialing…</string>
     <string name="active">Active</string>
     <string name="hanging_up">Hanging up</string>
+
+    <string name="phone">Phone</string>
+    <string name="contacts">Contacts</string>
 </resources>
