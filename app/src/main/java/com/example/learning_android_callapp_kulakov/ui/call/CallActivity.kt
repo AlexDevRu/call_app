@@ -1,5 +1,6 @@
 package com.example.learning_android_callapp_kulakov.ui.call
 
+import android.annotation.SuppressLint
 import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
@@ -24,6 +25,7 @@ class CallActivity : AppCompatActivity(), View.OnClickListener {
 
     private val viewModel by viewModels<CallViewModel>()
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCallBinding.inflate(layoutInflater)
@@ -66,7 +68,8 @@ class CallActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             if (it == Call.STATE_DIALING) {
-                binding.root.jumpToState(R.id.end)
+                binding.root.transitionToEnd()
+                //binding.root.jumpToState(R.id.end)
             } else if (it == Call.STATE_ACTIVE) {
                 binding.root.transitionToEnd()
                 viewModel.start()

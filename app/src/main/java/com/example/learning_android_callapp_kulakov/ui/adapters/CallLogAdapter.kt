@@ -2,6 +2,7 @@ package com.example.learning_android_callapp_kulakov.ui.adapters
 
 import android.provider.CallLog
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil.ItemCallback
 import androidx.recyclerview.widget.ListAdapter
@@ -12,7 +13,9 @@ import com.example.learning_android_callapp_kulakov.models.Call
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CallLogAdapter : ListAdapter<Call, CallLogAdapter.CallViewHolder>(DIFF_UTIL) {
+class CallLogAdapter(
+    private val listener: Listener
+): ListAdapter<Call, CallLogAdapter.CallViewHolder>(DIFF_UTIL) {
 
     companion object {
         val DIFF_UTIL = object : ItemCallback<Call>() {
@@ -26,6 +29,10 @@ class CallLogAdapter : ListAdapter<Call, CallLogAdapter.CallViewHolder>(DIFF_UTI
         }
     }
 
+    interface Listener {
+        fun onItemClick(call: Call)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CallViewHolder {
         val binding = ItemCallBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return CallViewHolder(binding)
@@ -37,11 +44,18 @@ class CallLogAdapter : ListAdapter<Call, CallLogAdapter.CallViewHolder>(DIFF_UTI
 
     inner class CallViewHolder(
         private val binding: ItemCallBinding
-    ) : RecyclerView.ViewHolder(binding.root) {
+    ) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
 
         private val simpleDateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
 
+        private var call: Call? = null
+
+        init {
+            binding.root.setOnClickListener(this)
+        }
+
         fun bind(call: Call) {
+            this.call = call
             binding.tvPhoneNumber.text = call.phoneNumber
             binding.tvDate.text = simpleDateFormat.format(call.timestamp)
             binding.ivCallType.setImageResource(
@@ -51,6 +65,12 @@ class CallLogAdapter : ListAdapter<Call, CallLogAdapter.CallViewHolder>(DIFF_UTI
                     else -> R.drawable.ic_call_missed
                 }
             )
+        }
+
+        override fun onClick(view: View?) {
+            when (view) {
+                binding.root -> listener.onItemClick(call!!)
+            }
         }
     }
 

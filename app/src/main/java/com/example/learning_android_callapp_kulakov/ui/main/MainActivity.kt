@@ -20,16 +20,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.learning_android_callapp_kulakov.Extensions.pop
 import com.example.learning_android_callapp_kulakov.R
 import com.example.learning_android_callapp_kulakov.databinding.ActivityMainBinding
+import com.example.learning_android_callapp_kulakov.models.Call
 import com.example.learning_android_callapp_kulakov.ui.adapters.CallLogAdapter
 
 
-class MainActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClickListener {
+class MainActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClickListener, CallLogAdapter.Listener {
 
     private lateinit var binding: ActivityMainBinding
 
     private val viewModel by viewModels<MainViewModel>()
 
-    private val callLogAdapter = CallLogAdapter()
+    private val callLogAdapter = CallLogAdapter(this)
 
     private val permissionsLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -148,7 +149,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClick
             binding.btn0 -> binding.etPhoneNumber.append("0")
             binding.btnSharp -> binding.etPhoneNumber.append("#")
             binding.btnBackspace -> binding.etPhoneNumber.pop()
-            binding.btnCall -> callPhonePermissionsLauncher.launch(Manifest.permission.CALL_PHONE)
+            binding.btnCall -> {
+                viewModel.phoneNumber = binding.etPhoneNumber.text.toString().trim()
+                callPhonePermissionsLauncher.launch(Manifest.permission.CALL_PHONE)
+            }
             binding.btnDialVisibility -> changeDialPadVisibility()
         }
     }
@@ -165,7 +169,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClick
 
     private fun doCall() {
         val intent = Intent(Intent.ACTION_CALL)
-        intent.data = Uri.parse("tel:" + binding.etPhoneNumber.text.toString().trim())
+        intent.data = Uri.parse("tel:" + viewModel.phoneNumber)
         startActivity(intent)
     }
 
@@ -174,5 +178,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, View.OnLongClick
             binding.root.transitionToEnd()
         else
             binding.root.transitionToStart()
+    }
+
+    override fun onItemClick(call: Call) {
+        viewModel.phoneNumber = call.phoneNumber
+        callPhonePermissionsLauncher.launch(Manifest.permission.CALL_PHONE)
     }
 }

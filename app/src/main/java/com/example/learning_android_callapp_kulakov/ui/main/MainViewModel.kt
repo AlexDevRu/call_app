@@ -16,6 +16,8 @@ class MainViewModel(private val app: Application): AndroidViewModel(app) {
     private val _calls = MutableLiveData<List<Call>>()
     val calls : LiveData<List<Call>> = _calls
 
+    var phoneNumber: String? = null
+
     fun readCallLog() {
         viewModelScope.launch(Dispatchers.IO) {
             val idCol = CallLog.Calls._ID
