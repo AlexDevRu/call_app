@@ -1,5 +1,6 @@
 package com.example.learning_android_callapp_kulakov.ui.adapters
 
+import android.annotation.SuppressLint
 import android.provider.CallLog
 import android.view.LayoutInflater
 import android.view.View
@@ -55,17 +56,21 @@ class CallLogAdapter(
             binding.root.setOnClickListener(this)
         }
 
+        @SuppressLint("SetTextI18n")
         fun bind(call: Call) {
             this.call = call
             Glide.with(binding.ivAvatar)
                 .load(call.avatar)
                 .error(R.drawable.ic_account)
                 .into(binding.ivAvatar)
+
             binding.tvPhoneNumber.text = if (call.count > 1)
                 binding.root.context.getString(R.string.call_log_title_with_counter, call.phoneNumber, call.count)
             else
                 call.phoneNumber
+
             binding.tvDate.text = simpleDateFormat.format(call.timestamp)
+
             binding.ivCallType.setImageResource(
                 when (call.callType) {
                     CallLog.Calls.INCOMING_TYPE -> R.drawable.ic_call_received

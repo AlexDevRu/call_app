@@ -11,9 +11,11 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.learning_android_callapp_kulakov.databinding.FragmentContactsBinding
+import com.example.learning_android_callapp_kulakov.models.Contact
 import com.example.learning_android_callapp_kulakov.ui.adapters.ContactsAdapter
+import com.example.learning_android_callapp_kulakov.ui.contact_details.ContactDetailsActivity
 
-class ContactsFragment : Fragment() {
+class ContactsFragment : Fragment(), ContactsAdapter.Listener {
 
     private lateinit var binding: FragmentContactsBinding
 
@@ -27,7 +29,7 @@ class ContactsFragment : Fragment() {
         }
     }
 
-    private val contactsAdapter = ContactsAdapter()
+    private val contactsAdapter = ContactsAdapter(this)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,4 +55,7 @@ class ContactsFragment : Fragment() {
         }
     }
 
+    override fun onItemClick(contact: Contact) {
+        ContactDetailsActivity.startActivity(requireContext(), contact.id)
+    }
 }

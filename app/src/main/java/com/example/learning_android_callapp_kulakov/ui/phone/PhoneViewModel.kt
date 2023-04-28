@@ -51,14 +51,14 @@ class PhoneViewModel(private val app: Application): AndroidViewModel(app) {
             val idCol = CallLog.Calls._ID
             val dateCol = CallLog.Calls.DATE
             val numberCol = CallLog.Calls.NUMBER
-            val durationCol = CallLog.Calls.DURATION
             val typeCol = CallLog.Calls.TYPE
+            val durationCol = CallLog.Calls.DURATION
 
             val contactNumberCol = ContactsContract.CommonDataKinds.Phone.NUMBER
             val displayNameCol = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME
             val photoThumbnailUriCol = ContactsContract.CommonDataKinds.Phone.PHOTO_THUMBNAIL_URI
 
-            val projection = arrayOf(idCol, dateCol, numberCol, durationCol, typeCol)
+            val projection = arrayOf(idCol, dateCol, numberCol, typeCol, durationCol)
             val contactProjection = arrayOf(contactNumberCol, displayNameCol, photoThumbnailUriCol)
 
             val phonesMap = hashMapOf<String, PhoneWithThumbnail>()
@@ -92,8 +92,8 @@ class PhoneViewModel(private val app: Application): AndroidViewModel(app) {
             val idColIdx = cursor.getColumnIndex(idCol)
             val dateColIdx = cursor.getColumnIndex(dateCol)
             val numberColIdx = cursor.getColumnIndex(numberCol)
-            val durationColIdx = cursor.getColumnIndex(durationCol)
             val typeColIdx = cursor.getColumnIndex(typeCol)
+            val durationColIdx = cursor.getColumnIndex(durationCol)
 
             val calls = mutableListOf<Call>()
 
@@ -101,10 +101,10 @@ class PhoneViewModel(private val app: Application): AndroidViewModel(app) {
                 val id = cursor.getLong(idColIdx)
                 val timestamp = cursor.getLong(dateColIdx)
                 val number = cursor.getString(numberColIdx)
-                val duration = cursor.getString(durationColIdx)
                 val type = cursor.getInt(typeColIdx)
+                val duration = cursor.getLong(durationColIdx)
 
-                Timber.d("$number $duration $type")
+                Timber.d("$number $type")
 
                 val phoneNumberOnlyDigits = number.replace(regex, "")
 
@@ -121,6 +121,7 @@ class PhoneViewModel(private val app: Application): AndroidViewModel(app) {
                         phoneNumber = displayName,
                         callType = type,
                         avatar = phonesMap[phoneNumberOnlyDigits]?.thumbnail,
+                        duration = duration,
                         count = 1
                     )
                     calls.add(call)

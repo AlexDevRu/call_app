@@ -1,6 +1,7 @@
 package com.example.learning_android_callapp_kulakov.ui.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil.ItemCallback
 import androidx.recyclerview.widget.ListAdapter
@@ -10,7 +11,9 @@ import com.example.learning_android_callapp_kulakov.R
 import com.example.learning_android_callapp_kulakov.databinding.ItemContactBinding
 import com.example.learning_android_callapp_kulakov.models.Contact
 
-class ContactsAdapter : ListAdapter<Contact, ContactsAdapter.ContactViewHolder>(DIFF_UTIL) {
+class ContactsAdapter(
+    private val listener: Listener
+): ListAdapter<Contact, ContactsAdapter.ContactViewHolder>(DIFF_UTIL) {
 
     companion object {
         val DIFF_UTIL = object : ItemCallback<Contact>() {
@@ -24,6 +27,10 @@ class ContactsAdapter : ListAdapter<Contact, ContactsAdapter.ContactViewHolder>(
         }
     }
 
+    interface Listener {
+        fun onItemClick(contact: Contact)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactViewHolder {
         val binding = ItemContactBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ContactViewHolder(binding)
@@ -35,14 +42,27 @@ class ContactsAdapter : ListAdapter<Contact, ContactsAdapter.ContactViewHolder>(
 
     inner class ContactViewHolder(
         private val binding: ItemContactBinding
-    ) : RecyclerView.ViewHolder(binding.root) {
+    ) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+
+        private var contact: Contact? = null
+
+        init {
+            binding.root.setOnClickListener(this)
+        }
 
         fun bind(contact: Contact) {
+            this.contact = contact
             Glide.with(binding.ivAvatar)
                 .load(contact.avatar)
                 .error(R.drawable.ic_account)
                 .into(binding.ivAvatar)
             binding.tvDisplayName.text = contact.name
+        }
+
+        override fun onClick(view: View?) {
+            when (view) {
+                binding.root -> listener.onItemClick(contact!!)
+            }
         }
 
     }

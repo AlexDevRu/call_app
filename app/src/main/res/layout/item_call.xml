@@ -37,16 +37,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/ivCallType"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="(650) 555-1212" />
+        tools:text="@tools:sample/us_phones" />
 
     <TextView
         android:id="@+id/tvDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
+        android:gravity="end"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="12.12.2022 12:33" />
+        tools:text="12.12.2022 12:33\n02:33" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

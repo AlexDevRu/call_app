@@ -54,6 +54,7 @@
                 <action android:name="android.telecom.InCallService" />
             </intent-filter>
         </service>
+        <activity android:name=".ui.contact_details.ContactDetailsActivity" />
     </application>
 
 </manifest>

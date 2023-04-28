@@ -17,10 +17,16 @@ class ContactsViewModel(private val app: Application): AndroidViewModel(app) {
 
     fun readContacts() {
         viewModelScope.launch(Dispatchers.IO) {
+            val idCol = ContactsContract.Contacts._ID
+            val displayNameCol = ContactsContract.Contacts.DISPLAY_NAME
+            val thumbnailCol = ContactsContract.Contacts.PHOTO_THUMBNAIL_URI
+
+            val projection = arrayOf(idCol, displayNameCol, thumbnailCol)
+
             val contactsList = ArrayList<Contact>()
             val contactsCursor = app.contentResolver?.query(
                 ContactsContract.Contacts.CONTENT_URI,
-                null,
+                projection,
                 null,
                 null,
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC"

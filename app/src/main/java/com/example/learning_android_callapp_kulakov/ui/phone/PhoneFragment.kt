@@ -3,7 +3,6 @@ package com.example.learning_android_callapp_kulakov.ui.phone
 import android.Manifest
 import android.app.role.RoleManager
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.telecom.TelecomManager
@@ -22,6 +21,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.learning_android_callapp_kulakov.Extensions.pop
 import com.example.learning_android_callapp_kulakov.R
+import com.example.learning_android_callapp_kulakov.Utils
 import com.example.learning_android_callapp_kulakov.databinding.FragmentPhoneBinding
 import com.example.learning_android_callapp_kulakov.models.Call
 import com.example.learning_android_callapp_kulakov.ui.adapters.CallLogAdapter
@@ -46,7 +46,7 @@ class PhoneFragment : Fragment(), View.OnClickListener, View.OnLongClickListener
         ActivityResultContracts.RequestPermission()
     ) { result ->
         if (result) {
-            doCall()
+            Utils.doCall(requireContext(), viewModel.phoneNumber.orEmpty())
         }
     }
 
@@ -175,12 +175,6 @@ class PhoneFragment : Fragment(), View.OnClickListener, View.OnLongClickListener
             }
             else -> false
         }
-    }
-
-    private fun doCall() {
-        val intent = Intent(Intent.ACTION_CALL)
-        intent.data = Uri.parse("tel:" + viewModel.phoneNumber)
-        startActivity(intent)
     }
 
     private fun changeDialPadVisibility() {

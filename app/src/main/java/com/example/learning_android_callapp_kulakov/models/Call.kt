@@ -6,5 +6,6 @@ data class Call(
     val callType: Int,
     val phoneNumber: String,
     val avatar: String?,
+    val duration: Long,
     val count: Int
 )
