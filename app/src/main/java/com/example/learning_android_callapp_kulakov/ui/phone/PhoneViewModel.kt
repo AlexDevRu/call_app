@@ -86,7 +86,7 @@ class PhoneViewModel(private val app: Application): AndroidViewModel(app) {
             val cursor = app.contentResolver.query(
                 CallLog.Calls.CONTENT_URI,
                 projection, null, null,
-                "${CallLog.Calls.DATE} desc"
+                "$dateCol desc"
             ) ?: return@launch
 
             val idColIdx = cursor.getColumnIndex(idCol)
