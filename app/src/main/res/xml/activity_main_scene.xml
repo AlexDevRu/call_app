@@ -7,6 +7,9 @@
         app:constraintSetStart="@id/start"
         app:duration="250">
         <KeyFrameSet />
+        <OnClick
+            app:targetId="@id/btnDialVisibility"
+            app:clickAction="toggle"/>
     </Transition>
 
     <ConstraintSet android:id="@+id/start">

@@ -20,7 +20,6 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.learning_android_callapp_kulakov.Extensions.pop
-import com.example.learning_android_callapp_kulakov.R
 import com.example.learning_android_callapp_kulakov.Utils
 import com.example.learning_android_callapp_kulakov.databinding.FragmentPhoneBinding
 import com.example.learning_android_callapp_kulakov.models.Call
@@ -116,7 +115,6 @@ class PhoneFragment : Fragment(), View.OnClickListener, View.OnLongClickListener
         binding.btnSharp.setOnClickListener(this)
         binding.btnBackspace.setOnClickListener(this)
         binding.btnCall.setOnClickListener(this)
-        binding.btnDialVisibility.setOnClickListener(this)
 
         binding.etPhoneNumber.doAfterTextChanged {
             binding.btnBackspace.isVisible = !it.isNullOrEmpty()
@@ -164,7 +162,6 @@ class PhoneFragment : Fragment(), View.OnClickListener, View.OnLongClickListener
                 viewModel.phoneNumber = binding.etPhoneNumber.text.toString().trim()
                 callPhonePermissionsLauncher.launch(Manifest.permission.CALL_PHONE)
             }
-            binding.btnDialVisibility -> changeDialPadVisibility()
         }
     }
 
@@ -176,13 +173,6 @@ class PhoneFragment : Fragment(), View.OnClickListener, View.OnLongClickListener
             }
             else -> false
         }
-    }
-
-    private fun changeDialPadVisibility() {
-        if (binding.root.currentState == R.id.start)
-            binding.root.transitionToEnd()
-        else
-            binding.root.transitionToStart()
     }
 
     override fun onItemClick(call: Call) {

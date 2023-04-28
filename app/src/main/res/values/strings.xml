@@ -17,4 +17,6 @@
     <string name="call_log_title_with_counter">%s (%d)</string>
 
     <string name="back">Back</string>
+    <string name="delete">Delete</string>
+    <string name="share">Share</string>
 </resources>

@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.CallLog
+import android.provider.ContactsContract
 import com.example.learning_android_callapp_kulakov.models.Call
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -75,5 +76,14 @@ object Utils {
         }
 
         calls
+    }
+
+    fun shareContact(context: Context, lookupKey: String, contactName: String) {
+        val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey)
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = ContactsContract.Contacts.CONTENT_VCARD_TYPE
+        intent.putExtra(Intent.EXTRA_STREAM, uri)
+        intent.putExtra(Intent.EXTRA_SUBJECT, contactName)
+        context.startActivity(intent)
     }
 }
