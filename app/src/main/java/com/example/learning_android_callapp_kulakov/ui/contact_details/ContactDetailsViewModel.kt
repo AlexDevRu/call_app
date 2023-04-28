@@ -25,7 +25,7 @@ class ContactDetailsViewModel(
     val goBack : SharedFlow<Unit> = _goBack
 
     val phoneNumber: String
-        get() = contact.value?.phoneNumber.orEmpty()
+        get() = contact.value?.contact?.phoneNumber.orEmpty()
 
     val contactName: String
         get() = contact.value?.contact?.name.orEmpty()
@@ -72,12 +72,6 @@ class ContactDetailsViewModel(
                     lookupKey = contactsCursor.getString(lookupKeyIndex)
 
                     if (name != null) {
-                        val contact = Contact(
-                            id = id,
-                            name = name,
-                            avatar = photo
-                        )
-
                         val phoneNumber = if (hasPhone == 0) "" else {
                             val phones = app.contentResolver.query(
                                 ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -99,7 +93,14 @@ class ContactDetailsViewModel(
                         else
                             emptyList()
 
-                        val contactDetails = ContactDetails(contact, phoneNumber, calls)
+                        val contact = Contact(
+                            id = id,
+                            name = name,
+                            avatar = photo,
+                            phoneNumber = phoneNumber
+                        )
+
+                        val contactDetails = ContactDetails(contact, calls)
                         _contact.postValue(contactDetails)
                     }
                 }

@@ -82,7 +82,7 @@ class ContactDetailsActivity : AppCompatActivity(), View.OnClickListener, CallLo
     private fun observe() {
         viewModel.contact.observe(this) {
             binding.tvName.text = it.contact.name
-            binding.tvPhoneNumber.text = it.phoneNumber
+            binding.tvPhoneNumber.text = it.contact.phoneNumber
             Glide.with(binding.ivAvatar)
                 .load(it.contact.avatar)
                 .into(binding.ivAvatar)

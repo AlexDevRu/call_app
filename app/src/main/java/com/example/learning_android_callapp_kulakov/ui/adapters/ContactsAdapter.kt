@@ -3,11 +3,13 @@ package com.example.learning_android_callapp_kulakov.ui.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil.ItemCallback
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.learning_android_callapp_kulakov.R
+import com.example.learning_android_callapp_kulakov.Utils
 import com.example.learning_android_callapp_kulakov.databinding.ItemContactBinding
 import com.example.learning_android_callapp_kulakov.models.Contact
 
@@ -48,6 +50,7 @@ class ContactsAdapter(
 
         init {
             binding.root.setOnClickListener(this)
+            binding.btnCall.setOnClickListener(this)
         }
 
         fun bind(contact: Contact) {
@@ -57,11 +60,13 @@ class ContactsAdapter(
                 .error(R.drawable.ic_account)
                 .into(binding.ivAvatar)
             binding.tvDisplayName.text = contact.name
+            binding.btnCall.isVisible = !contact.phoneNumber.isNullOrBlank()
         }
 
         override fun onClick(view: View?) {
             when (view) {
                 binding.root -> listener.onItemClick(contact!!)
+                binding.btnCall -> Utils.doCall(binding.root.context, contact!!.phoneNumber!!)
             }
         }
 

@@ -45,6 +45,7 @@ class ContactsFragment : Fragment(), ContactsAdapter.Listener {
         binding.rvContacts.adapter = contactsAdapter
         val dividerItemDecoration = DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
         binding.rvContacts.addItemDecoration(dividerItemDecoration)
+        binding.rvContacts.setHasFixedSize(true)
         contactsPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
         observe()
     }

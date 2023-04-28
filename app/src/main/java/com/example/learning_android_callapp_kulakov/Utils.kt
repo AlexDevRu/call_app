@@ -75,6 +75,8 @@ object Utils {
             }
         }
 
+        cursor.close()
+
         calls
     }
 
@@ -85,5 +87,31 @@ object Utils {
         intent.putExtra(Intent.EXTRA_STREAM, uri)
         intent.putExtra(Intent.EXTRA_SUBJECT, contactName)
         context.startActivity(intent)
+    }
+
+    fun getPhoneNumbersForContacts(context: Context) : Map<Long, String?> {
+        val idCol = ContactsContract.CommonDataKinds.Phone.CONTACT_ID
+        val contactNumberCol = ContactsContract.CommonDataKinds.Phone.NUMBER
+
+        val projection = arrayOf(idCol, contactNumberCol)
+
+        val phonesMap = hashMapOf<Long, String?>()
+
+        val phonesCursor = context.contentResolver.query(
+            ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection,null,null, null
+        ) ?: return phonesMap
+
+        val idIndex = phonesCursor.getColumnIndexOrThrow(idCol)
+        val numberIndex = phonesCursor.getColumnIndexOrThrow(contactNumberCol)
+
+        while (phonesCursor.moveToNext()) {
+            val phoneNumber = phonesCursor.getString(numberIndex)
+            val contactId = phonesCursor.getLong(idIndex)
+            phonesMap[contactId] = phoneNumber
+        }
+
+        phonesCursor.close()
+
+        return phonesMap
     }
 }

@@ -48,6 +48,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="12.12.2022 12:33\n02:33" />
+        tools:text="12.12.2022 12:33" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

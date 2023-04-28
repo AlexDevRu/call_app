@@ -19,4 +19,6 @@
     <string name="back">Back</string>
     <string name="delete">Delete</string>
     <string name="share">Share</string>
+
+    <string name="add_contact">Add contact</string>
 </resources>
