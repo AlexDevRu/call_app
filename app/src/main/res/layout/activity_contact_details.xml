@@ -21,8 +21,8 @@
         android:id="@+id/ivAvatar"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:scaleType="centerCrop"
         android:background="@color/grey"
+        android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@tools:sample/backgrounds/scenic" />
@@ -104,5 +104,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/fabCall"
         tools:listitem="@layout/item_call" />
+
+    <TextView
+        android:id="@+id/tvNoCalls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/no_calls_with_this_contact"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/rvCalls"
+        app:layout_constraintEnd_toEndOf="@id/rvCalls"
+        app:layout_constraintStart_toStartOf="@id/rvCalls"
+        app:layout_constraintTop_toTopOf="@id/rvCalls" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

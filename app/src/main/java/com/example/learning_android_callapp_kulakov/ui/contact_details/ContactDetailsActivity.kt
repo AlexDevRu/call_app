@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -82,11 +83,12 @@ class ContactDetailsActivity : AppCompatActivity(), View.OnClickListener, CallLo
     private fun observe() {
         viewModel.contact.observe(this) {
             binding.tvName.text = it.contact.name
-            binding.tvPhoneNumber.text = it.contact.phoneNumber
+            binding.tvPhoneNumber.text = if (it.contact.phoneNumber.isNullOrBlank()) "-" else it.contact.phoneNumber
             Glide.with(binding.ivAvatar)
                 .load(it.contact.avatar)
                 .into(binding.ivAvatar)
             callLogAdapter.submitList(it.calls)
+            binding.tvNoCalls.isVisible = it.calls.isEmpty()
         }
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
