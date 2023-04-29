@@ -21,6 +21,7 @@ import com.example.learning_android_callapp_kulakov.Utils
 import com.example.learning_android_callapp_kulakov.databinding.ActivityContactDetailsBinding
 import com.example.learning_android_callapp_kulakov.models.Call
 import com.example.learning_android_callapp_kulakov.ui.adapters.CallLogAdapter
+import com.example.learning_android_callapp_kulakov.ui.edit.EditActivity
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -67,6 +68,7 @@ class ContactDetailsActivity : AppCompatActivity(), View.OnClickListener, CallLo
         popupMenu.setOnMenuItemClickListener(this)
         popupMenu.setForceShowIcon(true)
 
+        binding.btnEdit.setOnClickListener(this)
         binding.btnOptions.setOnClickListener(this)
 
         observe()
@@ -106,6 +108,7 @@ class ContactDetailsActivity : AppCompatActivity(), View.OnClickListener, CallLo
             binding.fabCall -> callPhonePermissionsLauncher.launch(Manifest.permission.CALL_PHONE)
             binding.fabSms -> Utils.sendSms(this, viewModel.phoneNumber)
             binding.btnOptions -> popupMenu.show()
+            binding.btnEdit -> EditActivity.startActivity(this, viewModel.contactId)
         }
     }
 

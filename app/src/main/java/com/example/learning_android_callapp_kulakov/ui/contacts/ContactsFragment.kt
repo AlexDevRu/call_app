@@ -13,9 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.learning_android_callapp_kulakov.databinding.FragmentContactsBinding
 import com.example.learning_android_callapp_kulakov.models.Contact
 import com.example.learning_android_callapp_kulakov.ui.adapters.ContactsAdapter
+import com.example.learning_android_callapp_kulakov.ui.add_contact.AddContactActivity
 import com.example.learning_android_callapp_kulakov.ui.contact_details.ContactDetailsActivity
 
-class ContactsFragment : Fragment(), ContactsAdapter.Listener {
+class ContactsFragment : Fragment(), ContactsAdapter.Listener, View.OnClickListener {
 
     private lateinit var binding: FragmentContactsBinding
 
@@ -46,6 +47,7 @@ class ContactsFragment : Fragment(), ContactsAdapter.Listener {
         val dividerItemDecoration = DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
         binding.rvContacts.addItemDecoration(dividerItemDecoration)
         binding.rvContacts.setHasFixedSize(true)
+        binding.fabAddContact.setOnClickListener(this)
         contactsPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
         observe()
     }
@@ -53,6 +55,12 @@ class ContactsFragment : Fragment(), ContactsAdapter.Listener {
     private fun observe() {
         viewModel.contacts.observe(viewLifecycleOwner) {
             contactsAdapter.submitList(it)
+        }
+    }
+
+    override fun onClick(view: View?) {
+        when (view) {
+            binding.fabAddContact -> AddContactActivity.startActivity(requireContext())
         }
     }
 

@@ -1,6 +1,7 @@
-package com.example.learning_android_callapp_kulakov.ui.contact_details
+package com.example.learning_android_callapp_kulakov.ui.edit
 
 import android.app.Application
+import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.ContactsContract
 import androidx.lifecycle.*
@@ -11,44 +12,48 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
-class ContactDetailsViewModel(
+class EditContactViewModel(
     private val app: Application,
     savedStateHandle: SavedStateHandle
-): AndroidViewModel(app) {
+) : AndroidViewModel(app) {
 
     private val _contact = MutableLiveData<ContactDetails>()
-    val contact : LiveData<ContactDetails> = _contact
+    val contact: LiveData<ContactDetails> = _contact
 
     private val _goBack = MutableSharedFlow<Unit>()
     val goBack : SharedFlow<Unit> = _goBack
 
-    val contactId: Long
-        get() = contact.value?.contact?.id ?: 0L
+    private var contactId = 0L
 
-    val phoneNumber: String
-        get() = contact.value?.contact?.phoneNumber.orEmpty()
+    private val _uri = MutableLiveData<Image>()
+    val uri : LiveData<Image> = _uri
 
-    val contactName: String
-        get() = contact.value?.contact?.name.orEmpty()
-
-    var lookupKey: String = ""
-        private set
+    sealed interface Image {
+        class Camera(val bitmap: Bitmap) : Image
+        class Gallery(val uri: Uri) : Image
+    }
 
     init {
-        val contactId = savedStateHandle.get<Long>("CONTACT_ID")
-        Timber.e("contactId - $contactId")
+        savedStateHandle.get<Long>(CONTACT_ID)?.let {
+            contactId = it
+            getContactDetails(it)
+        }
+    }
 
+    fun setUri(image: Image) {
+        _uri.value = image
+    }
+
+    private fun getContactDetails(contactId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             val idCol = ContactsContract.Contacts._ID
             val displayNameCol = ContactsContract.Contacts.DISPLAY_NAME
             val hasPhoneNumberCol = ContactsContract.Contacts.HAS_PHONE_NUMBER
             val photoCol = ContactsContract.Contacts.PHOTO_URI
             val thumbnailCol = ContactsContract.Contacts.PHOTO_THUMBNAIL_URI
-            val lookupKeyCol = ContactsContract.Contacts.LOOKUP_KEY
 
-            val projection = arrayOf(idCol, displayNameCol, hasPhoneNumberCol, photoCol, thumbnailCol, lookupKeyCol)
+            val projection = arrayOf(idCol, displayNameCol, hasPhoneNumberCol, photoCol, thumbnailCol)
 
             val contactsCursor = app.contentResolver.query(
                 ContactsContract.Contacts.CONTENT_URI,
@@ -64,7 +69,6 @@ class ContactDetailsViewModel(
                 val hasPhoneIndex = contactsCursor.getColumnIndex(hasPhoneNumberCol)
                 val photoIndex = contactsCursor.getColumnIndex(photoCol)
                 val thumbnailIndex = contactsCursor.getColumnIndex(thumbnailCol)
-                val lookupKeyIndex = contactsCursor.getColumnIndex(lookupKeyCol)
 
                 if (contactsCursor.moveToFirst()) {
                     val id = contactsCursor.getLong(idIndex)
@@ -72,7 +76,7 @@ class ContactDetailsViewModel(
                     val photo = contactsCursor.getString(photoIndex)
                     val thumbnail = contactsCursor.getString(thumbnailIndex)
                     val hasPhone = contactsCursor.getInt(hasPhoneIndex)
-                    lookupKey = contactsCursor.getString(lookupKeyIndex)
+                    //lookupKey = contactsCursor.getString(lookupKeyIndex)
 
                     if (name != null) {
                         val phoneNumber = if (hasPhone == 0) "" else {
@@ -85,7 +89,8 @@ class ContactDetailsViewModel(
                             )
                             if (phones != null) {
                                 phones.moveToFirst()
-                                val phoneNumber = phones.getString(phones.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                                val phoneNumber = phones.getString(phones.getColumnIndexOrThrow(
+                                    ContactsContract.CommonDataKinds.Phone.NUMBER))
                                 phones.close()
                                 phoneNumber
                             } else ""
@@ -113,11 +118,14 @@ class ContactDetailsViewModel(
         }
     }
 
-    fun delete() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey)
-            app.contentResolver.delete(uri, null, null)
+    fun saveChanges(name: String, phoneNumber: String) {
+        viewModelScope.launch {
+            Utils.editContact(app.contentResolver, contact.value!!.contact.id, name, phoneNumber, uri.value)
             _goBack.emit(Unit)
         }
+    }
+
+    companion object {
+        const val CONTACT_ID = "CONTACT_ID"
     }
 }

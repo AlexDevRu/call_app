@@ -33,7 +33,7 @@ class PhoneViewModel(private val app: Application): AndroidViewModel(app) {
         }
     }
 
-    init {
+    fun startCallObserver() {
         app.contentResolver?.registerContentObserver(
             CallLog.Calls.CONTENT_URI,
             true,

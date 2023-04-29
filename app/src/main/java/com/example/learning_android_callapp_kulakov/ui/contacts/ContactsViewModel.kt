@@ -47,7 +47,7 @@ class ContactsViewModel(private val app: Application): AndroidViewModel(app) {
             val displayNameCol = ContactsContract.Contacts.DISPLAY_NAME
             val thumbnailCol = ContactsContract.Contacts.PHOTO_THUMBNAIL_URI
 
-            val phonesMap = Utils.getPhoneNumbersForContacts(app)
+            val phonesMap = Utils.getPhoneNumbersForContacts(app.contentResolver)
 
             val projection = arrayOf(idCol, displayNameCol, thumbnailCol)
 
