@@ -37,6 +37,7 @@ class PhoneFragment : Fragment(), View.OnClickListener, View.OnLongClickListener
         ActivityResultContracts.RequestMultiplePermissions()
     ) { result ->
         if (result[Manifest.permission.READ_CALL_LOG] == true) {
+            viewModel.startCallObserver()
             viewModel.readCallLog()
         }
     }
