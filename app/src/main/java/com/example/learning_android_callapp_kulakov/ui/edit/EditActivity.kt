@@ -1,11 +1,13 @@
 package com.example.learning_android_callapp_kulakov.ui.edit
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentResultListener
@@ -22,6 +24,14 @@ class EditActivity : AppCompatActivity(), View.OnClickListener, FragmentResultLi
     private lateinit var binding: ActivityEditContactBinding
 
     private val viewModel by viewModels<EditContactViewModel>()
+
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        if (it) {
+            saveChanges()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,8 +58,12 @@ class EditActivity : AppCompatActivity(), View.OnClickListener, FragmentResultLi
 
     private fun observe() {
         viewModel.contact.observe(this) {
-            binding.etFullName.setText(it.contact.name)
+            binding.etGivenName.setText(it.givenName)
+            binding.etFamilyName.setText(it.familyName)
+            binding.etMiddleName.setText(it.middleName)
             binding.etPhone.setText(it.contact.phoneNumber)
+            binding.etEmail.setText(it.email)
+            binding.etAddress.setText(it.address)
             Glide.with(binding.ivAvatar)
                 .load(it.contact.avatar)
                 .into(binding.ivAvatar)
@@ -71,7 +85,7 @@ class EditActivity : AppCompatActivity(), View.OnClickListener, FragmentResultLi
 
     override fun onClick(view: View?) {
         when (view) {
-            binding.fabSave -> saveChanges()
+            binding.fabSave -> permissionLauncher.launch(Manifest.permission.WRITE_CONTACTS)
             binding.ivAvatar -> {
                 val getPhotoDialog = GetPhotoDialog()
                 getPhotoDialog.show(supportFragmentManager, null)
@@ -80,9 +94,13 @@ class EditActivity : AppCompatActivity(), View.OnClickListener, FragmentResultLi
     }
 
     private fun saveChanges() {
-        val name = binding.etFullName.text?.toString().orEmpty()
+        val givenName = binding.etGivenName.text?.toString().orEmpty()
+        val familyName = binding.etFamilyName.text?.toString().orEmpty()
+        val middleName = binding.etMiddleName.text?.toString().orEmpty()
         val phone = binding.etPhone.text?.toString().orEmpty()
-        viewModel.saveChanges(name, phone)
+        val email = binding.etEmail.text?.toString().orEmpty()
+        val address = binding.etAddress.text?.toString().orEmpty()
+        viewModel.saveChanges(givenName, familyName, middleName, phone, email, address)
     }
 
     companion object {

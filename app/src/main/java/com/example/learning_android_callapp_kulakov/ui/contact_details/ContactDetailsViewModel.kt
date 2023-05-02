@@ -103,7 +103,15 @@ class ContactDetailsViewModel(
                             phoneNumber = phoneNumber
                         )
 
-                        val contactDetails = ContactDetails(contact, calls)
+                        val contactDetails = ContactDetails(
+                            contact = contact,
+                            givenName = "",
+                            familyName = "",
+                            middleName = "",
+                            email = Utils.getContactEmail(app.contentResolver, id),
+                            address = Utils.getContactAddress(app.contentResolver, id),
+                            calls = calls
+                        )
                         _contact.postValue(contactDetails)
                     }
                 }

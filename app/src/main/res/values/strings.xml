@@ -29,6 +29,11 @@
     <string name="choose_from_camera">Choose from camera</string>
     <string name="choose_from_gallery">Choose from gallery</string>
     <string name="select_option">Select option</string>
+    <string name="email">Email</string>
+    <string name="address">Address</string>
+    <string name="given_name">Given name</string>
+    <string name="family_name">Family name</string>
+    <string name="middle_name">Middle name</string>
     <string-array name="get_photo_options">
         <item>Choose from camera</item>
         <item>Choose from gallery</item>

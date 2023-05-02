@@ -64,8 +64,12 @@ class AddContactActivity : AppCompatActivity(), View.OnClickListener, FragmentRe
             }
             binding.fabSave -> {
                 viewModel.insertContact(
-                    binding.etFullName.text?.toString().orEmpty(),
-                    binding.etPhone.text?.toString().orEmpty()
+                    binding.etGivenName.text?.toString().orEmpty(),
+                    binding.etFamilyName.text?.toString().orEmpty(),
+                    binding.etMiddleName.text?.toString().orEmpty(),
+                    binding.etPhone.text?.toString().orEmpty(),
+                    binding.etEmail.text?.toString().orEmpty(),
+                    binding.etAddress.text?.toString().orEmpty()
                 )
             }
         }

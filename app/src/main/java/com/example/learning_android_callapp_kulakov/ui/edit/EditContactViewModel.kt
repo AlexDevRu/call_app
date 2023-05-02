@@ -96,11 +96,6 @@ class EditContactViewModel(
                             } else ""
                         }
 
-                        val calls = if (phoneNumber.isNotEmpty())
-                            Utils.getCallsByPhoneNumber(app.contentResolver, phoneNumber, thumbnail, name)
-                        else
-                            emptyList()
-
                         val contact = Contact(
                             id = id,
                             name = name,
@@ -108,7 +103,17 @@ class EditContactViewModel(
                             phoneNumber = phoneNumber
                         )
 
-                        val contactDetails = ContactDetails(contact, calls)
+                        val contactName = Utils.getContactName(app.contentResolver, id)
+
+                        val contactDetails = ContactDetails(
+                            contact = contact,
+                            givenName = contactName.first,
+                            familyName = contactName.second,
+                            middleName = contactName.third,
+                            email = Utils.getContactEmail(app.contentResolver, id),
+                            address = Utils.getContactAddress(app.contentResolver, id),
+                            calls = emptyList()
+                        )
                         _contact.postValue(contactDetails)
                     }
                 }
@@ -118,9 +123,9 @@ class EditContactViewModel(
         }
     }
 
-    fun saveChanges(name: String, phoneNumber: String) {
+    fun saveChanges(givenName: String, familyName: String, middleName: String, phoneNumber: String, email: String, address: String) {
         viewModelScope.launch {
-            Utils.editContact(app.contentResolver, contact.value!!.contact.id, name, phoneNumber, uri.value)
+            Utils.editContact(app.contentResolver, contact.value!!.contact.id, givenName, familyName, middleName, phoneNumber, email, address, uri.value)
             _goBack.emit(Unit)
         }
     }

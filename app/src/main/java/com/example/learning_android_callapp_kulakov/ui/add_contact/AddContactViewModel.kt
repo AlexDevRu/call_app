@@ -23,9 +23,9 @@ class AddContactViewModel(private val app: Application): AndroidViewModel(app) {
         _uri.value = uri
     }
 
-    fun insertContact(name: String, phoneNumber: String) {
+    fun insertContact(givenName: String, familyName: String, middleName: String, phoneNumber: String, email: String, address: String) {
         viewModelScope.launch {
-            Utils.insertContact(app.contentResolver, name, phoneNumber, uri.value)
+            Utils.insertContact(app.contentResolver, givenName, familyName, middleName, phoneNumber, email, address, uri.value)
             _goBack.emit(Unit)
         }
     }

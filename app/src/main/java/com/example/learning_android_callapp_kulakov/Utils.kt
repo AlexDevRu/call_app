@@ -122,7 +122,12 @@ object Utils {
         phonesMap
     }
 
-    suspend fun editContact(contentResolver: ContentResolver, contactId: Long, name: String, phoneNumber: String, image: EditContactViewModel.Image?): Unit = withContext(Dispatchers.IO) {
+    suspend fun editContact(
+        contentResolver: ContentResolver,
+        contactId: Long,
+        givenName: String, familyName: String, middleName: String, phoneNumber: String, email: String, address: String,
+        image: EditContactViewModel.Image?
+    ): Unit = withContext(Dispatchers.IO) {
         val cpo = arrayListOf<ContentProviderOperation>()
 
         val phonesCursor = contentResolver.query(
@@ -160,7 +165,48 @@ object Utils {
                     ContactsContract.CommonDataKinds.StructuredName._ID + " = $nameId AND ${ContactsContract.RawContacts.Data.MIMETYPE} = ?",
                     arrayOf(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
                 )
-                .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, name)
+                .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, givenName)
+                .withValue(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME, familyName)
+                .withValue(ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME, middleName)
+                .build()
+        )
+
+        val emailCursor = contentResolver.query(
+            ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+            arrayOf(ContactsContract.CommonDataKinds.Email._ID),
+            ContactsContract.CommonDataKinds.Email.CONTACT_ID + "=$contactId",
+            null, null
+        )
+        emailCursor?.moveToFirst()
+        val emailId = emailCursor?.getString(emailCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Email._ID))
+        emailCursor?.close()
+        cpo.add(
+            ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+                .withSelection(
+                    ContactsContract.CommonDataKinds.Email._ID + " = $emailId AND ${ContactsContract.RawContacts.Data.MIMETYPE} = ?",
+                    arrayOf(ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
+                )
+                .withValue(ContactsContract.CommonDataKinds.Email.DATA, email)
+                .withValue(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_MOBILE)
+                .build()
+        )
+
+        val addressCursor = contentResolver.query(
+            ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_URI,
+            arrayOf(ContactsContract.CommonDataKinds.StructuredPostal._ID),
+            ContactsContract.CommonDataKinds.StructuredPostal.CONTACT_ID + "=$contactId",
+            null, null
+        )
+        addressCursor?.moveToFirst()
+        val addressId = addressCursor?.getString(addressCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.StructuredPostal._ID))
+        addressCursor?.close()
+        cpo.add(
+            ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+                .withSelection(
+                    ContactsContract.CommonDataKinds.StructuredPostal._ID + " = $addressId AND ${ContactsContract.RawContacts.Data.MIMETYPE} = ?",
+                    arrayOf(ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)
+                )
+                .withValue(ContactsContract.CommonDataKinds.StructuredPostal.DATA, address)
                 .build()
         )
 
@@ -203,7 +249,7 @@ object Utils {
         contentResolver.applyBatch(ContactsContract.AUTHORITY, cpo)
     }
 
-    suspend fun insertContact(contentResolver: ContentResolver, name: String, phoneNumber: String, imageUri: Uri?): Unit = withContext(Dispatchers.IO) {
+    suspend fun insertContact(contentResolver: ContentResolver, givenName: String, familyName: String, middleName: String, phoneNumber: String, email: String, address: String, imageUri: Uri?): Unit = withContext(Dispatchers.IO) {
         val cpo = arrayListOf<ContentProviderOperation>()
         val rawContactId = 0
         cpo.add(
@@ -216,7 +262,9 @@ object Utils {
             ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                 .withValueBackReference(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, rawContactId)
                 .withValue(ContactsContract.RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, name)
+                .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, givenName)
+                .withValue(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME, familyName)
+                .withValue(ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME, middleName)
                 .build()
         )
         cpo.add(
@@ -225,6 +273,23 @@ object Utils {
                 .withValue(ContactsContract.RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
                 .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phoneNumber)
                 .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE)
+                .build()
+        )
+
+        cpo.add(
+            ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, rawContactId)
+                .withValue(ContactsContract.RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.CommonDataKinds.Email.DATA, email)
+                .withValue(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_MOBILE)
+                .build()
+        )
+
+        cpo.add(
+            ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, rawContactId)
+                .withValue(ContactsContract.RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.CommonDataKinds.StructuredPostal.DATA, address)
                 .build()
         )
 
@@ -247,5 +312,70 @@ object Utils {
         val bmp = MediaStore.Images.Media.getBitmap(contentResolver, uri)
         bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         return baos.toByteArray()
+    }
+
+    suspend fun getContactEmail(contentResolver: ContentResolver, contactId: Long) = withContext(Dispatchers.IO) {
+        var email = ""
+        val emailCur = contentResolver.query(
+            ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+            arrayOf(ContactsContract.CommonDataKinds.Email.DATA),
+            ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?",
+            arrayOf(contactId.toString()),
+            null
+        )
+        if (emailCur != null && emailCur.moveToFirst()) {
+            email =
+                emailCur.getString(emailCur.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Email.DATA))
+            emailCur.close()
+        }
+        email
+    }
+
+    suspend fun getContactAddress(contentResolver: ContentResolver, contactId: Long) = withContext(Dispatchers.IO) {
+        val addressCur = contentResolver.query(
+            ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_URI,
+            arrayOf(ContactsContract.CommonDataKinds.StructuredPostal.DATA),
+            ContactsContract.CommonDataKinds.StructuredPostal.CONTACT_ID + " = ?",
+            arrayOf(contactId.toString()),
+            null
+        )
+
+        var address = ""
+        if (addressCur != null && addressCur.moveToFirst()) {
+            address =
+                addressCur.getString(addressCur.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.StructuredPostal.DATA))
+            addressCur.close()
+        }
+
+        address
+    }
+
+    suspend fun getContactName(contentResolver: ContentResolver, contactId: Long) = withContext(Dispatchers.IO) {
+        val nameCur = contentResolver.query(
+            ContactsContract.Data.CONTENT_URI,
+            arrayOf(
+                ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME,
+                ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME,
+                ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME,
+            ),
+            ContactsContract.CommonDataKinds.StructuredName.CONTACT_ID + " = ?",
+            arrayOf(contactId.toString()),
+            null
+        )
+
+        var givenName = ""
+        var familyName = ""
+        var middleName = ""
+        if (nameCur != null && nameCur.moveToFirst()) {
+            givenName =
+                nameCur.getString(nameCur.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME))
+            familyName =
+                nameCur.getString(nameCur.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME))
+            middleName =
+                nameCur.getString(nameCur.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME))
+            nameCur.close()
+        }
+
+        Triple(givenName, familyName, middleName)
     }
 }

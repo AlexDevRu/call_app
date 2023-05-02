@@ -52,7 +52,6 @@ class CallActivity : AppCompatActivity(), View.OnClickListener {
         binding.phoneNumber.text = intent?.data?.schemeSpecificPart
 
         CallManager.callState.observe(this) {
-
             Timber.d("CALL_STATE - $it")
 
             if (it == null) return@observe
