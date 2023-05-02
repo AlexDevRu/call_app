@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.learning_android_callapp_kulakov.R
-import com.example.learning_android_callapp_kulakov.Utils
 import com.example.learning_android_callapp_kulakov.databinding.ItemContactBinding
 import com.example.learning_android_callapp_kulakov.models.Contact
 
@@ -31,6 +30,7 @@ class ContactsAdapter(
 
     interface Listener {
         fun onItemClick(contact: Contact)
+        fun onCallClick(contact: Contact)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactViewHolder {
@@ -66,7 +66,7 @@ class ContactsAdapter(
         override fun onClick(view: View?) {
             when (view) {
                 binding.root -> listener.onItemClick(contact!!)
-                binding.btnCall -> Utils.doCall(binding.root.context, contact!!.phoneNumber!!)
+                binding.btnCall -> listener.onCallClick(contact!!)
             }
         }
 

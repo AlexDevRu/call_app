@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.learning_android_callapp_kulakov.Utils
 import com.example.learning_android_callapp_kulakov.databinding.FragmentContactsBinding
 import com.example.learning_android_callapp_kulakov.models.Contact
 import com.example.learning_android_callapp_kulakov.ui.adapters.ContactsAdapter
@@ -27,6 +28,14 @@ class ContactsFragment : Fragment(), ContactsAdapter.Listener, View.OnClickListe
     ) {
         if (it) {
             viewModel.readContacts()
+        }
+    }
+
+    private val callPhonePermissionsLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { result ->
+        if (result) {
+            Utils.doCall(requireContext(), viewModel.phoneNumber.orEmpty())
         }
     }
 
@@ -66,5 +75,10 @@ class ContactsFragment : Fragment(), ContactsAdapter.Listener, View.OnClickListe
 
     override fun onItemClick(contact: Contact) {
         ContactDetailsActivity.startActivity(requireContext(), contact.id)
+    }
+
+    override fun onCallClick(contact: Contact) {
+        viewModel.phoneNumber = contact.phoneNumber
+        callPhonePermissionsLauncher.launch(Manifest.permission.CALL_PHONE)
     }
 }

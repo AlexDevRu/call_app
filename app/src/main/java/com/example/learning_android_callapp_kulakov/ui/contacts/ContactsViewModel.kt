@@ -21,6 +21,8 @@ class ContactsViewModel(private val app: Application): AndroidViewModel(app) {
 
     private val handler = Handler(Looper.getMainLooper())
 
+    var phoneNumber: String? = null
+
     private val contactsContentObserver = object : ContentObserver(handler) {
         override fun onChange(selfChange: Boolean) {
             super.onChange(selfChange)
