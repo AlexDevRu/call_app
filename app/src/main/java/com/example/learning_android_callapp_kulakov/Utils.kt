@@ -1,23 +1,20 @@
 package com.example.learning_android_callapp_kulakov
 
-import android.content.*
+import android.content.ContentProviderOperation
+import android.content.ContentResolver
+import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Build
-import android.os.Environment
 import android.provider.CallLog
 import android.provider.ContactsContract
 import android.provider.MediaStore
-import androidx.annotation.RequiresApi
 import com.example.learning_android_callapp_kulakov.models.Call
 import com.example.learning_android_callapp_kulakov.ui.edit.EditContactViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStream
 
 
 object Utils {
@@ -250,48 +247,5 @@ object Utils {
         val bmp = MediaStore.Images.Media.getBitmap(contentResolver, uri)
         bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         return baos.toByteArray()
-    }
-
-    fun getImageUri(contentResolver: ContentResolver, image: Bitmap): Uri? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-            saveImageInQ(contentResolver, image)
-        else
-            saveImageInLegacy(image)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private fun saveImageInQ(contentResolver: ContentResolver, bitmap: Bitmap) : Uri? {
-        val filename = "IMG_${System.currentTimeMillis()}.jpg"
-        var fos: OutputStream? = null
-        var imageUri: Uri? = null
-        val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
-            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
-            put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
-            put(MediaStore.Video.Media.IS_PENDING, 1)
-        }
-
-        contentResolver.also { resolver ->
-            imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-            fos = imageUri?.let { resolver.openOutputStream(it) }
-        }
-
-        fos?.use { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
-
-        contentValues.clear()
-        contentValues.put(MediaStore.Video.Media.IS_PENDING, 0)
-
-        if (imageUri != null)
-            contentResolver.update(imageUri!!, contentValues, null, null)
-
-        return imageUri
-    }
-
-    private fun saveImageInLegacy(bitmap: Bitmap) : Uri {
-        val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-        val image = File(imagesDir, "IMG_${System.currentTimeMillis()}.jpg")
-        val fos = FileOutputStream(image)
-        fos.use { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
-        return Uri.fromFile(image)
     }
 }

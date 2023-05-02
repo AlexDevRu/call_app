@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvCamera"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:background="?attr/selectableItemBackground"
+        android:paddingVertical="16dp"
+        android:paddingHorizontal="24dp"
+        android:text="@string/choose_from_camera" />
+
+    <TextView
+        android:id="@+id/tvGallery"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:background="?attr/selectableItemBackground"
+        android:paddingVertical="16dp"
+        android:paddingHorizontal="24dp"
+        android:text="@string/choose_from_gallery" />
+
+</androidx.appcompat.widget.LinearLayoutCompat>

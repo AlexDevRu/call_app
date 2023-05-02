@@ -3,14 +3,12 @@ package com.example.learning_android_callapp_kulakov.ui.edit
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.provider.MediaStore
 import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
+import androidx.fragment.app.FragmentResultListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -18,33 +16,12 @@ import com.bumptech.glide.Glide
 import com.example.learning_android_callapp_kulakov.databinding.ActivityEditContactBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.io.File
-import java.text.SimpleDateFormat
-import java.util.*
 
-class EditActivity : AppCompatActivity(), View.OnClickListener {
+class EditActivity : AppCompatActivity(), View.OnClickListener, FragmentResultListener {
 
     private lateinit var binding: ActivityEditContactBinding
 
     private val viewModel by viewModels<EditContactViewModel>()
-
-    private lateinit var uri: Uri
-
-    private val cameraLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        if (it.resultCode == RESULT_OK) {
-            /*val imageBitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                it.data?.extras?.getParcelable("data", Bitmap::class.java)
-            } else {
-                it.data?.extras?.get("data") as Bitmap
-            }
-            if (imageBitmap != null) {
-                viewModel.setUri(EditContactViewModel.Image.Camera(imageBitmap))
-            }*/
-            viewModel.setUri(EditContactViewModel.Image.Gallery(uri))
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +32,18 @@ class EditActivity : AppCompatActivity(), View.OnClickListener {
         binding.ivAvatar.setOnClickListener(this)
 
         observe()
+
+        supportFragmentManager.setFragmentResultListener(GetPhotoDialog.requestKey, this, this)
+    }
+
+    override fun onFragmentResult(requestKey: String, result: Bundle) {
+        val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            result.getParcelable(GetPhotoDialog.URI, Uri::class.java)
+        } else {
+            result.get(GetPhotoDialog.URI) as Uri
+        }
+        if (uri != null)
+            viewModel.setUri(EditContactViewModel.Image.Gallery(uri))
     }
 
     private fun observe() {
@@ -84,15 +73,8 @@ class EditActivity : AppCompatActivity(), View.OnClickListener {
         when (view) {
             binding.fabSave -> saveChanges()
             binding.ivAvatar -> {
-                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-
-                val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(System.currentTimeMillis())
-                val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-                val file = File.createTempFile("JPEG_${timeStamp}_",".jpg", storageDir)
-
-                uri = FileProvider.getUriForFile(this, "com.example.android.fileprovider", file)
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
-                cameraLauncher.launch(intent)
+                val getPhotoDialog = GetPhotoDialog()
+                getPhotoDialog.show(supportFragmentManager, null)
             }
         }
     }

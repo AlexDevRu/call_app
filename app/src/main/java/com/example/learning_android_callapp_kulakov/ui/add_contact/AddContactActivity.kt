@@ -2,33 +2,26 @@ package com.example.learning_android_callapp_kulakov.ui.add_contact
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentResultListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.learning_android_callapp_kulakov.databinding.ActivityAddContactBinding
+import com.example.learning_android_callapp_kulakov.ui.edit.GetPhotoDialog
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class AddContactActivity : AppCompatActivity(), View.OnClickListener {
+class AddContactActivity : AppCompatActivity(), View.OnClickListener, FragmentResultListener {
 
     private lateinit var binding: ActivityAddContactBinding
 
     private val viewModel by viewModels<AddContactViewModel>()
-
-    private val galleryLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        if (it.resultCode == RESULT_OK) {
-            val uri = it.data?.data ?: return@registerForActivityResult
-            viewModel.setUri(uri)
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +30,17 @@ class AddContactActivity : AppCompatActivity(), View.OnClickListener {
         binding.ivAvatar.setOnClickListener(this)
         binding.fabSave.setOnClickListener(this)
         observe()
+        supportFragmentManager.setFragmentResultListener(GetPhotoDialog.requestKey, this, this)
+    }
+
+    override fun onFragmentResult(requestKey: String, result: Bundle) {
+        val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            result.getParcelable(GetPhotoDialog.URI, Uri::class.java)
+        } else {
+            result.get(GetPhotoDialog.URI) as Uri
+        }
+        if (uri != null)
+            viewModel.setUri(uri)
     }
 
     private fun observe() {
@@ -54,7 +58,10 @@ class AddContactActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(view: View?) {
         when (view) {
-            binding.ivAvatar -> openGalleryIntent()
+            binding.ivAvatar -> {
+                val getPhotoDialog = GetPhotoDialog()
+                getPhotoDialog.show(supportFragmentManager, null)
+            }
             binding.fabSave -> {
                 viewModel.insertContact(
                     binding.etFullName.text?.toString().orEmpty(),
@@ -62,11 +69,6 @@ class AddContactActivity : AppCompatActivity(), View.OnClickListener {
                 )
             }
         }
-    }
-
-    private fun openGalleryIntent() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        galleryLauncher.launch(intent)
     }
 
     companion object {
