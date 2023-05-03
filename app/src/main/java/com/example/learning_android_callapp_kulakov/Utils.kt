@@ -211,19 +211,6 @@ object Utils {
         )
 
         if (image != null) {
-            val imageCursor = contentResolver.query(
-                ContactsContract.Data.CONTENT_URI,
-                arrayOf(ContactsContract.CommonDataKinds.Photo._ID),
-                ContactsContract.CommonDataKinds.Photo.CONTACT_ID + "=$contactId AND ${ContactsContract.RawContacts.Data.MIMETYPE} = ?",
-                arrayOf(ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE), null
-            )
-            Timber.d("imageId = ${imageCursor?.count}")
-            imageCursor?.moveToFirst()
-            val imageId = imageCursor?.getString(imageCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Photo._ID))
-            imageCursor?.close()
-
-            Timber.d("imageId = $imageId")
-
             val byteArray = when (image) {
                 is EditContactViewModel.Image.Camera -> {
                     val baos = ByteArrayOutputStream()
@@ -235,15 +222,53 @@ object Utils {
                 }
             }
 
-            cpo.add(
-                ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
-                    .withSelection(
-                        ContactsContract.CommonDataKinds.Photo._ID + " = $imageId AND ${ContactsContract.RawContacts.Data.MIMETYPE} = ?",
-                        arrayOf(ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
-                    )
-                    .withValue(ContactsContract.CommonDataKinds.Photo.PHOTO, byteArray)
-                    .build()
+            val imageCursor = contentResolver.query(
+                ContactsContract.Data.CONTENT_URI,
+                arrayOf(ContactsContract.CommonDataKinds.Photo._ID),
+                ContactsContract.CommonDataKinds.Photo.CONTACT_ID + "=$contactId AND ${ContactsContract.RawContacts.Data.MIMETYPE} = ?",
+                arrayOf(ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE), null
             )
+            Timber.d("imageId = ${imageCursor?.count}")
+            val exist = imageCursor?.moveToFirst() == true
+
+            if (exist) {
+                val imageId = imageCursor?.getString(imageCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Photo._ID))
+                Timber.d("imageId = $imageId")
+                cpo.add(
+                    ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+                        .withSelection(
+                            ContactsContract.CommonDataKinds.Photo._ID + " = $imageId AND ${ContactsContract.RawContacts.Data.MIMETYPE} = ?",
+                            arrayOf(ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
+                        )
+                        .withValue(ContactsContract.CommonDataKinds.Photo.PHOTO, byteArray)
+                        .build()
+                )
+            } else {
+                val c = contentResolver.query(
+                    ContactsContract.RawContacts.CONTENT_URI,
+                    arrayOf(ContactsContract.RawContacts._ID),
+                    ContactsContract.RawContacts.CONTACT_ID + " = ?",
+                    arrayOf(contactId.toString()),
+                    null
+                )
+
+                var rawContactId = 0
+                Timber.d("c count = ${c?.count}")
+                if (c != null && c.moveToFirst()) {
+                    rawContactId = c.getInt(c.getColumnIndexOrThrow(ContactsContract.RawContacts._ID))
+                    c.close()
+                }
+
+                cpo.add(
+                    ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValue(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, rawContactId)
+                        .withValue(ContactsContract.RawContacts.Data.MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Photo.PHOTO, byteArray)
+                        .build()
+                )
+            }
+
+            imageCursor?.close()
         }
 
         contentResolver.applyBatch(ContactsContract.AUTHORITY, cpo)

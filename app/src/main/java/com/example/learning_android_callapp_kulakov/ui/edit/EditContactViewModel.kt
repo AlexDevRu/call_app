@@ -26,8 +26,8 @@ class EditContactViewModel(
 
     private var contactId = 0L
 
-    private val _uri = MutableLiveData<Image>()
-    val uri : LiveData<Image> = _uri
+    private val _uri = MutableLiveData<Uri>()
+    val uri : LiveData<Uri> = _uri
 
     sealed interface Image {
         class Camera(val bitmap: Bitmap) : Image
@@ -41,7 +41,7 @@ class EditContactViewModel(
         }
     }
 
-    fun setUri(image: Image) {
+    fun setUri(image: Uri) {
         _uri.value = image
     }
 
@@ -51,9 +51,8 @@ class EditContactViewModel(
             val displayNameCol = ContactsContract.Contacts.DISPLAY_NAME
             val hasPhoneNumberCol = ContactsContract.Contacts.HAS_PHONE_NUMBER
             val photoCol = ContactsContract.Contacts.PHOTO_URI
-            val thumbnailCol = ContactsContract.Contacts.PHOTO_THUMBNAIL_URI
 
-            val projection = arrayOf(idCol, displayNameCol, hasPhoneNumberCol, photoCol, thumbnailCol)
+            val projection = arrayOf(idCol, displayNameCol, hasPhoneNumberCol, photoCol)
 
             val contactsCursor = app.contentResolver.query(
                 ContactsContract.Contacts.CONTENT_URI,
@@ -68,15 +67,12 @@ class EditContactViewModel(
                 val nameIndex = contactsCursor.getColumnIndex(displayNameCol)
                 val hasPhoneIndex = contactsCursor.getColumnIndex(hasPhoneNumberCol)
                 val photoIndex = contactsCursor.getColumnIndex(photoCol)
-                val thumbnailIndex = contactsCursor.getColumnIndex(thumbnailCol)
 
                 if (contactsCursor.moveToFirst()) {
                     val id = contactsCursor.getLong(idIndex)
                     val name = contactsCursor.getString(nameIndex)
                     val photo = contactsCursor.getString(photoIndex)
-                    val thumbnail = contactsCursor.getString(thumbnailIndex)
                     val hasPhone = contactsCursor.getInt(hasPhoneIndex)
-                    //lookupKey = contactsCursor.getString(lookupKeyIndex)
 
                     if (name != null) {
                         val phoneNumber = if (hasPhone == 0) "" else {
@@ -125,7 +121,8 @@ class EditContactViewModel(
 
     fun saveChanges(givenName: String, familyName: String, middleName: String, phoneNumber: String, email: String, address: String) {
         viewModelScope.launch {
-            Utils.editContact(app.contentResolver, contact.value!!.contact.id, givenName, familyName, middleName, phoneNumber, email, address, uri.value)
+            val image = if (uri.value != null) Image.Gallery(uri.value!!) else null
+            Utils.editContact(app.contentResolver, contact.value!!.contact.id, givenName, familyName, middleName, phoneNumber, email, address, image)
             _goBack.emit(Unit)
         }
     }

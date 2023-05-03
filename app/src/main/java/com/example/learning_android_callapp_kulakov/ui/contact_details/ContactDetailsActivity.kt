@@ -86,9 +86,17 @@ class ContactDetailsActivity : AppCompatActivity(), View.OnClickListener, CallLo
         viewModel.contact.observe(this) {
             binding.tvName.text = it.contact.name
             binding.tvPhoneNumber.text = if (it.contact.phoneNumber.isNullOrBlank()) "-" else it.contact.phoneNumber
+
+            binding.tvEmail.text = it.email
+            binding.tvEmail.isVisible = it.email.isNotBlank()
+
+            binding.tvAddress.text = it.address
+            binding.tvAddress.isVisible = it.address.isNotBlank()
+
             Glide.with(binding.ivAvatar)
                 .load(it.contact.avatar)
                 .into(binding.ivAvatar)
+
             callLogAdapter.submitList(it.calls)
             binding.tvNoCalls.isVisible = it.calls.isEmpty()
         }

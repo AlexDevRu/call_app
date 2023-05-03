@@ -53,7 +53,7 @@ class EditActivity : AppCompatActivity(), View.OnClickListener, FragmentResultLi
             result.get(GetPhotoDialog.URI) as Uri
         }
         if (uri != null)
-            viewModel.setUri(EditContactViewModel.Image.Gallery(uri))
+            viewModel.setUri(uri)
     }
 
     private fun observe() {
@@ -76,10 +76,9 @@ class EditActivity : AppCompatActivity(), View.OnClickListener, FragmentResultLi
             }
         }
         viewModel.uri.observe(this) {
-            when (it) {
-                is EditContactViewModel.Image.Camera -> binding.ivAvatar.setImageBitmap(it.bitmap)
-                is EditContactViewModel.Image.Gallery -> binding.ivAvatar.setImageURI(it.uri)
-            }
+            Glide.with(binding.ivAvatar)
+                .load(it)
+                .into(binding.ivAvatar)
         }
     }
 
