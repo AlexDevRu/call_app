@@ -40,6 +40,7 @@ class EditActivity : AppCompatActivity(), View.OnClickListener, FragmentResultLi
 
         binding.fabSave.setOnClickListener(this)
         binding.ivAvatar.setOnClickListener(this)
+        binding.fabBack.setOnClickListener(this)
 
         observe()
 
@@ -84,6 +85,7 @@ class EditActivity : AppCompatActivity(), View.OnClickListener, FragmentResultLi
 
     override fun onClick(view: View?) {
         when (view) {
+            binding.fabBack -> finish()
             binding.fabSave -> permissionLauncher.launch(Manifest.permission.WRITE_CONTACTS)
             binding.ivAvatar -> {
                 val getPhotoDialog = GetPhotoDialog()
