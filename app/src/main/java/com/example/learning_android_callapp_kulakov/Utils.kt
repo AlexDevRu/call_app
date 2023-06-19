@@ -388,9 +388,9 @@ object Utils {
             null
         )
 
-        var givenName = ""
-        var familyName = ""
-        var middleName = ""
+        var givenName: String? = null
+        var familyName: String? = null
+        var middleName: String? = null
         if (nameCur != null && nameCur.moveToFirst()) {
             givenName =
                 nameCur.getString(nameCur.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME))

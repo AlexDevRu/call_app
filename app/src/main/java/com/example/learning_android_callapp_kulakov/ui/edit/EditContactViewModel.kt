@@ -103,9 +103,9 @@ class EditContactViewModel(
 
                         val contactDetails = ContactDetails(
                             contact = contact,
-                            givenName = contactName.first,
-                            familyName = contactName.second,
-                            middleName = contactName.third,
+                            givenName = contactName.first.orEmpty(),
+                            familyName = contactName.second.orEmpty(),
+                            middleName = contactName.third.orEmpty(),
                             email = Utils.getContactEmail(app.contentResolver, id),
                             address = Utils.getContactAddress(app.contentResolver, id),
                             calls = emptyList()
