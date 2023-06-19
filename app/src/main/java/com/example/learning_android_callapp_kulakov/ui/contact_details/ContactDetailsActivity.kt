@@ -2,11 +2,15 @@ package com.example.learning_android_callapp_kulakov.ui.contact_details
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -54,6 +58,10 @@ class ContactDetailsActivity : AppCompatActivity(), View.OnClickListener, CallLo
 
     private val callLogAdapter = CallLogAdapter(this)
 
+    private val clipboardManager by lazy {
+        getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+    }
+
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +78,8 @@ class ContactDetailsActivity : AppCompatActivity(), View.OnClickListener, CallLo
 
         binding.btnEdit.setOnClickListener(this)
         binding.btnOptions.setOnClickListener(this)
+        binding.tvName.setOnClickListener(this)
+        binding.tvPhoneNumber.setOnClickListener(this)
 
         observe()
     }
@@ -117,6 +127,12 @@ class ContactDetailsActivity : AppCompatActivity(), View.OnClickListener, CallLo
             binding.fabSms -> Utils.sendSms(this, viewModel.phoneNumber)
             binding.btnOptions -> popupMenu.show()
             binding.btnEdit -> EditActivity.startActivity(this, viewModel.contactId)
+            binding.tvName, binding.tvPhoneNumber -> {
+                val text = (view as TextView).text
+                val clip = ClipData.newPlainText("", text)
+                clipboardManager.setPrimaryClip(clip)
+                Toast.makeText(applicationContext, getString(R.string.copied_text, text), Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

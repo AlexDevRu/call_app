@@ -38,4 +38,5 @@
         <item>Choose from camera</item>
         <item>Choose from gallery</item>
     </string-array>
+    <string name="copied_text">Copied: %s</string>
 </resources>
