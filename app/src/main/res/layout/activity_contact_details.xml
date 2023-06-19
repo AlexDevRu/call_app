@@ -28,6 +28,17 @@
         tools:src="@tools:sample/backgrounds/scenic" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnQr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/back"
+        android:src="@drawable/baseline_qr_code_2_24"
+        app:backgroundTint="@color/white"
+        app:fabSize="mini"
+        app:layout_constraintEnd_toStartOf="@id/btnEdit"
+        app:layout_constraintTop_toTopOf="@id/btnOptions" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btnEdit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

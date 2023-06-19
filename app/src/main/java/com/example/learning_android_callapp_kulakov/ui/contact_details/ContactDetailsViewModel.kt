@@ -7,6 +7,7 @@ import androidx.lifecycle.*
 import com.example.learning_android_callapp_kulakov.Utils
 import com.example.learning_android_callapp_kulakov.models.Contact
 import com.example.learning_android_callapp_kulakov.models.ContactDetails
+import com.example.learning_android_callapp_kulakov.models.ContactInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -23,6 +24,15 @@ class ContactDetailsViewModel(
 
     private val _goBack = MutableSharedFlow<Unit>()
     val goBack : SharedFlow<Unit> = _goBack
+
+    fun getContactInfo() = ContactInfo(
+        givenName = contact.value!!.givenName,
+        familyName = contact.value!!.familyName,
+        middleName = contact.value!!.middleName,
+        email = contact.value!!.email,
+        address = contact.value!!.address,
+        phoneNumber = contact.value!!.contact.phoneNumber,
+    )
 
     val contactId: Long
         get() = contact.value?.contact?.id ?: 0L
@@ -96,6 +106,36 @@ class ContactDetailsViewModel(
                         else
                             emptyList()
 
+                        var givenName: String? = null
+                        var familyName: String? = null
+                        var middleName: String? = null
+                        val nameCursor = app.contentResolver.query(
+                            ContactsContract.Data.CONTENT_URI,
+                            arrayOf(ContactsContract.CommonDataKinds.StructuredName._ID),
+                            ContactsContract.CommonDataKinds.StructuredName.CONTACT_ID + "=$contactId",
+                            null, null
+                        )
+                        nameCursor?.moveToFirst()
+                        val nameId = nameCursor?.getString(nameCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.StructuredName._ID))
+                        nameCursor?.close()
+                        val nameCursor2 = app.contentResolver.query(
+                            ContactsContract.Data.CONTENT_URI,
+                            arrayOf(
+                                ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME,
+                                ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME,
+                                ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME,
+                            ),
+                            ContactsContract.CommonDataKinds.StructuredName._ID + " = $nameId AND ${ContactsContract.RawContacts.Data.MIMETYPE} = ?",
+                            arrayOf(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE),
+                            null
+                        )
+                        if (nameCursor2?.moveToFirst() == true) {
+                            givenName = nameCursor2.getString(nameCursor2.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME))
+                            familyName = nameCursor2.getString(nameCursor2.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME))
+                            middleName = nameCursor2.getString(nameCursor2.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME))
+                            nameCursor2.close()
+                        }
+
                         val contact = Contact(
                             id = id,
                             name = name,
@@ -105,9 +145,9 @@ class ContactDetailsViewModel(
 
                         val contactDetails = ContactDetails(
                             contact = contact,
-                            givenName = "",
-                            familyName = "",
-                            middleName = "",
+                            givenName = givenName.orEmpty(),
+                            familyName = familyName.orEmpty(),
+                            middleName = middleName.orEmpty(),
                             email = Utils.getContactEmail(app.contentResolver, id),
                             address = Utils.getContactAddress(app.contentResolver, id),
                             calls = calls

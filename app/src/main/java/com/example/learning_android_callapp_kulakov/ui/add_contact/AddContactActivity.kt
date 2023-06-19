@@ -13,7 +13,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.learning_android_callapp_kulakov.databinding.ActivityAddContactBinding
+import com.example.learning_android_callapp_kulakov.models.ContactInfo
 import com.example.learning_android_callapp_kulakov.ui.edit.GetPhotoDialog
+import com.google.gson.Gson
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -23,12 +27,27 @@ class AddContactActivity : AppCompatActivity(), View.OnClickListener, FragmentRe
 
     private val viewModel by viewModels<AddContactViewModel>()
 
+    private val barcodeLauncher = registerForActivityResult(
+        ScanContract()
+    ) { result ->
+        if(result.contents != null) {
+            val contactInfo = Gson().fromJson(result.contents, ContactInfo::class.java)
+            binding.etGivenName.setText(contactInfo.givenName)
+            binding.etFamilyName.setText(contactInfo.familyName)
+            binding.etMiddleName.setText(contactInfo.middleName)
+            binding.etPhone.setText(contactInfo.phoneNumber)
+            binding.etEmail.setText(contactInfo.email)
+            binding.etAddress.setText(contactInfo.address)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddContactBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.ivAvatar.setOnClickListener(this)
         binding.fabSave.setOnClickListener(this)
+        binding.btnScanQr.setOnClickListener(this)
         observe()
         supportFragmentManager.setFragmentResultListener(GetPhotoDialog.requestKey, this, this)
     }
@@ -71,6 +90,11 @@ class AddContactActivity : AppCompatActivity(), View.OnClickListener, FragmentRe
                     binding.etEmail.text?.toString().orEmpty(),
                     binding.etAddress.text?.toString().orEmpty()
                 )
+            }
+            binding.btnScanQr -> {
+                val options = ScanOptions()
+                options.setOrientationLocked(false)
+                barcodeLauncher.launch(options)
             }
         }
     }

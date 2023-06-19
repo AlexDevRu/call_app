@@ -74,7 +74,7 @@ class PhoneViewModel(private val app: Application): AndroidViewModel(app) {
                 val photoThumbnailIndex = phonesCursor.getColumnIndexOrThrow(photoThumbnailUriCol)
                 while (phonesCursor.moveToNext()) {
                     val phoneNumber = phonesCursor.getString(numberIndex).replace(regex, "")
-                    val name = phonesCursor.getString(displayNameIndex)
+                    val name = phonesCursor.getString(displayNameIndex).orEmpty()
                     val thumbnail = phonesCursor.getString(photoThumbnailIndex)
                     phonesMap[phoneNumber] = PhoneWithThumbnail(name, thumbnail)
                 }

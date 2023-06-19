@@ -4,11 +4,13 @@ import android.content.ContentProviderOperation
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.CallLog
 import android.provider.ContactsContract
 import android.provider.MediaStore
+import android.util.TypedValue
 import com.example.learning_android_callapp_kulakov.models.Call
 import com.example.learning_android_callapp_kulakov.ui.edit.EditContactViewModel
 import kotlinx.coroutines.Dispatchers
@@ -18,6 +20,12 @@ import java.io.ByteArrayOutputStream
 
 
 object Utils {
+
+    val Number.toPx get() = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        this.toFloat(),
+        Resources.getSystem().displayMetrics
+    ).toInt()
 
     fun doCall(context: Context, phoneNumber: String) {
         val intent = Intent(Intent.ACTION_CALL)

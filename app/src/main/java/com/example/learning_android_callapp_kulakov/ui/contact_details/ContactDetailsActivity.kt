@@ -25,6 +25,7 @@ import com.example.learning_android_callapp_kulakov.Utils
 import com.example.learning_android_callapp_kulakov.databinding.ActivityContactDetailsBinding
 import com.example.learning_android_callapp_kulakov.models.Call
 import com.example.learning_android_callapp_kulakov.ui.adapters.CallLogAdapter
+import com.example.learning_android_callapp_kulakov.ui.contact_details.qr.QrDialog
 import com.example.learning_android_callapp_kulakov.ui.edit.EditActivity
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -76,6 +77,7 @@ class ContactDetailsActivity : AppCompatActivity(), View.OnClickListener, CallLo
         popupMenu.setOnMenuItemClickListener(this)
         popupMenu.setForceShowIcon(true)
 
+        binding.btnQr.setOnClickListener(this)
         binding.btnEdit.setOnClickListener(this)
         binding.btnOptions.setOnClickListener(this)
         binding.tvName.setOnClickListener(this)
@@ -132,6 +134,11 @@ class ContactDetailsActivity : AppCompatActivity(), View.OnClickListener, CallLo
                 val clip = ClipData.newPlainText("", text)
                 clipboardManager.setPrimaryClip(clip)
                 Toast.makeText(applicationContext, getString(R.string.copied_text, text), Toast.LENGTH_SHORT).show()
+            }
+            binding.btnQr -> {
+                val contactInfo = viewModel.getContactInfo()
+                val dialog = QrDialog.createInstance(contactInfo)
+                dialog.show(supportFragmentManager, null)
             }
         }
     }
