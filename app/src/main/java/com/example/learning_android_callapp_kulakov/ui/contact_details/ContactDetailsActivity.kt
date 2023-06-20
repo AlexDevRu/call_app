@@ -83,6 +83,9 @@ class ContactDetailsActivity : AppCompatActivity(), View.OnClickListener, CallLo
         binding.tvName.setOnClickListener(this)
         binding.tvPhoneNumber.setOnClickListener(this)
 
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
         observe()
     }
 
@@ -105,9 +108,14 @@ class ContactDetailsActivity : AppCompatActivity(), View.OnClickListener, CallLo
             binding.tvAddress.text = it.address
             binding.tvAddress.isVisible = it.address.isNotBlank()
 
-            Glide.with(binding.ivAvatar)
-                .load(it.contact.avatar)
-                .into(binding.ivAvatar)
+            if (it.contact.avatar.isNullOrBlank())
+                binding.ivAvatar.setImageResource(R.drawable.ic_account)
+            else
+                Glide.with(binding.ivAvatar)
+                    .load(it.contact.avatar)
+                    .centerCrop()
+                    .error(R.drawable.ic_account)
+                    .into(binding.ivAvatar)
 
             callLogAdapter.submitList(it.calls)
             binding.tvNoCalls.isVisible = it.calls.isEmpty()
