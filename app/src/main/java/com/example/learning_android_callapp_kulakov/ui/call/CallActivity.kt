@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -13,8 +14,12 @@ import android.view.View
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.isVisible
+import com.bumptech.glide.Glide
 import com.example.learning_android_callapp_kulakov.CallManager
+import com.example.learning_android_callapp_kulakov.Extensions.isDarkThemeOn
 import com.example.learning_android_callapp_kulakov.R
 import com.example.learning_android_callapp_kulakov.databinding.ActivityCallBinding
 import timber.log.Timber
@@ -49,7 +54,10 @@ class CallActivity : AppCompatActivity(), View.OnClickListener {
         binding.btnAnswer.setOnClickListener(this)
         binding.btnHangup.setOnClickListener(this)
 
-        binding.phoneNumber.text = intent?.data?.schemeSpecificPart
+        val phoneNumber = intent?.data?.schemeSpecificPart
+        binding.phoneNumber.text = phoneNumber
+        if (savedInstanceState == null && phoneNumber != null)
+            viewModel.getContact(phoneNumber)
 
         CallManager.callState.observe(this) {
             Timber.d("CALL_STATE - $it")
@@ -88,6 +96,27 @@ class CallActivity : AppCompatActivity(), View.OnClickListener {
             val minutes = (it / 60).toString().padStart(2, '0')
             val seconds = (it % 60).toString().padStart(2, '0')
             binding.tvDuration.text = "$minutes:$seconds"
+        }
+
+        viewModel.contact.observe(this) {
+            if (it != null) {
+                val tint = if (binding.root.context.isDarkThemeOn()) Color.WHITE else Color.BLACK
+                val unwrappedDrawable = AppCompatResources.getDrawable(binding.root.context, R.drawable.ic_account)
+                val wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable!!)
+                DrawableCompat.setTint(wrappedDrawable, tint)
+                if (it.avatar.isNullOrBlank())
+                    binding.avatar.setImageDrawable(wrappedDrawable)
+                else
+                    Glide.with(binding.avatar)
+                        .load(it.avatar)
+                        .centerCrop()
+                        .error(wrappedDrawable)
+                        .into(binding.avatar)
+                binding.name.text = it.name
+            } else {
+                binding.avatar.setImageDrawable(null)
+                binding.name.text = null
+            }
         }
     }
 
