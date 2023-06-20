@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.view.View
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -36,10 +37,9 @@ class GetPhotoDialog : DialogFragment(), View.OnClickListener {
     }
 
     private val galleryLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        if (it.resultCode == AppCompatActivity.RESULT_OK) {
-            val uri = it.data?.data ?: return@registerForActivityResult
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
             setFragmentResult(requestKey, bundleOf(URI to uri))
             dismiss()
         }
@@ -76,8 +76,8 @@ class GetPhotoDialog : DialogFragment(), View.OnClickListener {
     }
 
     private fun openGallery() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        galleryLauncher.launch(intent)
+        val input = PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+        galleryLauncher.launch(input)
     }
 
     companion object {

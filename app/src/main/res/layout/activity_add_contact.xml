@@ -30,7 +30,6 @@
                 android:layout_height="140dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_account"
-                app:tint="?mainTextColor"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"

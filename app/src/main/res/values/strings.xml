@@ -39,4 +39,5 @@
         <item>Choose from gallery</item>
     </string-array>
     <string name="copied_text">Copied: %s</string>
+    <string name="scan_qr">Scan QR</string>
 </resources>

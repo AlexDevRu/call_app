@@ -1,14 +1,18 @@
 package com.example.learning_android_callapp_kulakov.ui.adapters
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.provider.CallLog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.DiffUtil.ItemCallback
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.learning_android_callapp_kulakov.Extensions.isDarkThemeOn
 import com.example.learning_android_callapp_kulakov.R
 import com.example.learning_android_callapp_kulakov.databinding.ItemCallBinding
 import com.example.learning_android_callapp_kulakov.models.Call
@@ -59,9 +63,15 @@ class CallLogAdapter(
         @SuppressLint("SetTextI18n")
         fun bind(call: Call) {
             this.call = call
+
+            val tint = if (binding.root.context.isDarkThemeOn()) Color.WHITE else Color.BLACK
+            val unwrappedDrawable = AppCompatResources.getDrawable(binding.root.context, R.drawable.ic_account)
+            val wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable!!)
+            DrawableCompat.setTint(wrappedDrawable, tint)
+
             Glide.with(binding.ivAvatar)
                 .load(call.avatar)
-                .error(R.drawable.ic_account)
+                .error(wrappedDrawable)
                 .into(binding.ivAvatar)
 
             binding.tvPhoneNumber.text = if (call.count > 1)

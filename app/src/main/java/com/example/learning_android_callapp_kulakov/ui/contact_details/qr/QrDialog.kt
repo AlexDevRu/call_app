@@ -7,6 +7,7 @@ import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
+import com.example.learning_android_callapp_kulakov.R
 import com.example.learning_android_callapp_kulakov.Utils.toPx
 import com.example.learning_android_callapp_kulakov.models.ContactInfo
 import com.google.gson.Gson
@@ -31,7 +32,7 @@ class QrDialog : DialogFragment() {
         imageView.setImageBitmap(bitmap)
 
         return AlertDialog.Builder(requireContext())
-            .setTitle("Scan QR")
+            .setTitle(R.string.scan_qr)
             .setView(imageView)
             .create()
     }
