@@ -15,6 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.Glide
+import com.example.learning_android_callapp_kulakov.R
 import com.example.learning_android_callapp_kulakov.databinding.ActivityEditContactBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -42,9 +43,9 @@ class EditActivity : AppCompatActivity(), View.OnClickListener, FragmentResultLi
         binding.ivAvatar.setOnClickListener(this)
         binding.fabBack.setOnClickListener(this)
 
-        observe()
-
         supportFragmentManager.setFragmentResultListener(GetPhotoDialog.requestKey, this, this)
+
+        observe()
     }
 
     override fun onFragmentResult(requestKey: String, result: Bundle) {
@@ -65,9 +66,14 @@ class EditActivity : AppCompatActivity(), View.OnClickListener, FragmentResultLi
             binding.etPhone.setText(it.contact.phoneNumber)
             binding.etEmail.setText(it.email)
             binding.etAddress.setText(it.address)
-            Glide.with(binding.ivAvatar)
-                .load(it.contact.avatar)
-                .into(binding.ivAvatar)
+            if (it.contact.avatar.isNullOrBlank())
+                binding.ivAvatar.setImageResource(R.drawable.ic_account)
+            else
+                Glide.with(binding.ivAvatar)
+                    .load(it.contact.avatar)
+                    .centerCrop()
+                    .error(R.drawable.ic_account)
+                    .into(binding.ivAvatar)
         }
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {

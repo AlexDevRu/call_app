@@ -1,7 +1,6 @@
 package com.example.learning_android_callapp_kulakov.ui.edit
 
 import android.app.Dialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -19,9 +18,9 @@ import com.example.learning_android_callapp_kulakov.R
 import com.example.learning_android_callapp_kulakov.databinding.DialogGetPhotoBinding
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
-class GetPhotoDialog : DialogFragment(), DialogInterface.OnClickListener, View.OnClickListener {
+class GetPhotoDialog : DialogFragment(), View.OnClickListener {
 
     private lateinit var uri: Uri
 
@@ -59,42 +58,26 @@ class GetPhotoDialog : DialogFragment(), DialogInterface.OnClickListener, View.O
 
     override fun onClick(view: View?) {
         when (view) {
-            binding.tvCamera -> {
-                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-
-                val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(System.currentTimeMillis())
-                val storageDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-                val file = File.createTempFile("JPEG_${timeStamp}_",".jpg", storageDir)
-
-                uri = FileProvider.getUriForFile(requireContext(), "com.example.android.fileprovider", file)
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
-                cameraLauncher.launch(intent)
-            }
-            binding.tvGallery -> {
-                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                galleryLauncher.launch(intent)
-            }
+            binding.tvCamera -> openCamera()
+            binding.tvGallery -> openGallery()
         }
     }
 
-    override fun onClick(p0: DialogInterface?, which: Int) {
-        when (which) {
-            0 -> {
-                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+    private fun openCamera() {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
-                val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(System.currentTimeMillis())
-                val storageDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-                val file = File.createTempFile("JPEG_${timeStamp}_",".jpg", storageDir)
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(System.currentTimeMillis())
+        val storageDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val file = File.createTempFile("JPEG_${timeStamp}_",".jpg", storageDir)
 
-                uri = FileProvider.getUriForFile(requireContext(), "com.example.android.fileprovider", file)
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
-                cameraLauncher.launch(intent)
-            }
-            1 -> {
-                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                galleryLauncher.launch(intent)
-            }
-        }
+        uri = FileProvider.getUriForFile(requireContext(), "com.example.android.fileprovider", file)
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+        cameraLauncher.launch(intent)
+    }
+
+    private fun openGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        galleryLauncher.launch(intent)
     }
 
     companion object {
